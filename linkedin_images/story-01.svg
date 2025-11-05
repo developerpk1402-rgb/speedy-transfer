@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="628" viewBox="0 0 1200 628" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B132B"/>
+      <stop offset="100%" stop-color="#1F2A44"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#00D1B2"/>
+      <stop offset="100%" stop-color="#66E4FF"/>
+    </linearGradient>
+    <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0V24" fill="none" stroke="#22304D" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="628" fill="url(#bg)"/>
+  <rect width="1200" height="628" fill="url(#grid)" opacity="0.16"/>
+  <rect x="60" y="60" width="1080" height="4" fill="url(#accent)"/>
+  <text x="60" y="140" fill="#E6F1FF" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="46" font-weight="700">Revived a legacy Django app fast</text>
+  <text x="60" y="190" fill="#9FB3C8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="24">Debugging • DevOps • Speed to Green</text>
+  <g transform="translate(60,230)">
+    <circle cx="12" cy="12" r="5" fill="url(#accent)"/>
+    <text x="32" y="18" fill="#C7D3E0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="22">Fixed Pillow deps, unblocked migrations, launched dev server</text>
+  </g>
+  <g transform="translate(60,268)">
+    <circle cx="12" cy="12" r="5" fill="url(#accent)"/>
+    <text x="32" y="18" fill="#C7D3E0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="22">Aligned Python 3.11 • Django 3.2 • MySQL</text>
+  </g>
+  <g transform="translate(900,280)">
+    <rect x="0" y="0" width="220" height="140" rx="14" fill="#121A33" stroke="#2B3B5E" stroke-width="2"/>
+    <rect x="20" y="30" width="180" height="12" rx="6" fill="#2B3B5E"/>
+    <rect x="20" y="64" width="180" height="12" rx="6" fill="#2B3B5E"/>
+    <rect x="20" y="98" width="120" height="12" rx="6" fill="url(#accent)"/>
+  </g>
+  <g transform="translate(60,560)">
+    <text x="0" y="0" fill="#9FB3C8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="20">Cristian Meléndez • linkedin.com/in/cmelendezgp</text>
+  </g>
+</svg>

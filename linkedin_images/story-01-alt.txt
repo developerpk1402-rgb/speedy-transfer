@@ -1,0 +1,1 @@
+Alt text: Dark navy gradient card with the title "Revived a legacy Django app fast", two short bullet points about fixing dependencies and aligning versions, and a minimalist server icon. Footer shows Cristian Meléndez and LinkedIn URL.

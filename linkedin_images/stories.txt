@@ -1,0 +1,55 @@
+Story 01
+Title: Revived a legacy Django app fast
+Tagline: Debugging • DevOps • Speed to Green
+Bullets:
+- Fixed Pillow deps, unblocked migrations, launched dev server
+- Aligned Python 3.11 • Django 3.2 • MySQL
+
+Story 02
+Title: Stabilized remote MySQL + envs
+Tagline: ORM • Migrations • Secure config
+Bullets:
+- Centralized .env, corrected DB_NAME, live schema synced
+- Verified admin ops and parity
+
+Story 03
+Title: Business‑ready data modeling
+Tagline: Django Models • Refactoring
+Bullets:
+- Added amount/status to Booking, clarified relations
+- car_type_id → car_id; one‑way NULL safe
+
+Story 04
+Title: Frictionless UX & dynamic filters
+Tagline: CBVs • Tailwind • State
+Bullets:
+- Persisted inputs, zone→hotel dropdowns
+- Restored results state and polish
+
+Story 05
+Title: Capacity‑aware multi‑vehicle logic
+Tagline: Validation • Product rules
+Bullets:
+- Blocks checkout until capacity is met
+- Same‑destination rule enforced
+
+Story 06
+Title: Checkout data pipeline for payments
+Tagline: Stripe • PayPal • Integrity
+Bullets:
+- Normalized totals, clean payloads
+- Success/failure paths with Payment records
+
+Story 07
+Title: Email ops that actually deliver
+Tagline: SMTP • TLS/SSL • Templates
+Bullets:
+- Configured backend, tested end‑to‑end
+- Production sender with dev/stage creds
+
+Story 08
+Title: Delivery under constraints
+Tagline: Leadership • PM • Execution
+Bullets:
+- Status reports, scope control, merges
+- Shipped progress, earned trust + budget

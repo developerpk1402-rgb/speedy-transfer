@@ -1,0 +1,1 @@
+Alt text: Dark navy gradient card titled "Stabilized remote MySQL + envs" with bullets about .env centralization and live schema sync, plus a minimal database diagram icon. Footer shows Cristian Meléndez and LinkedIn URL.

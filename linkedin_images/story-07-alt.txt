@@ -1,0 +1,1 @@
+Alt text: Dark navy gradient card titled "Email ops that actually deliver" with bullets about SMTP configuration and production sender, with a stylized envelope graphic. Footer shows Cristian Meléndez and LinkedIn URL.
