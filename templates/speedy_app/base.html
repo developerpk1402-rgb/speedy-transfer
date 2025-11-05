@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light" class="scroll-smooth scroll-pt-20">
+  {% load static %}
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Speedy Transfers | Viajes en Puerto Vallarta</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <meta name="description" content="Speedy Transfers, Viajes en Puerto Vallarta" />
+    <meta name="keywords" content="Speedy Transfers, Viajes, Puerto Vallarta" />
+    <meta name="author" content="beyondteam.mx" />
+
+    <!-- FAVICON -->
+
+    {% block extra_css %}{% endblock %}
+    
+    <!-- Chat Widget Styles -->
+    <style>
+        #chatWidgetContainer {
+            transition: all 0.3s ease-in-out;
+        }
+        #chatWindow {
+            transition: opacity 0.3s ease-in-out;
+        }
+        #chatWindow:not(.hidden) {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+  </head>
+
+  <body>
+    {# {% include './includes/topbar.html' %} #}
+    {% include './includes/navbar.html' %}
+    {% if messages %}
+      <div id="notification-message" class="messages mx-1">
+        {% for message in messages %}
+          <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% if request.resolver_match.url_name != "results_view" and request.resolver_match.url_name != "summary_view" and request.resolver_match.url_name != "checkout_view" %}
+        {% include './includes/hero.html' %}
+    {% endif %}
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-14">
+      {% block content %}
+
+      {% endblock %}
+    </main>
+    {% if request.resolver_match.url_name != "results_view" and request.resolver_match.url_name != "summary_view"  and request.resolver_match.url_name != "checkout_view"%}
+      {% include './includes/contactanos.html' %}
+    {% endif %}
+    {% include './includes/footer.html' %}
+
+    <!-- Chat Widget JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatButton = document.getElementById('chatButton');
+            const chatWindow = document.getElementById('chatWindow');
+            
+            chatButton.addEventListener('click', function() {
+                if (chatWindow.classList.contains('hidden')) {
+                    chatWindow.classList.remove('hidden');
+                    chatButton.innerHTML = `
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        Cerrar Chat
+                    `;
+                } else {
+                    chatWindow.classList.add('hidden');
+                    chatButton.innerHTML = `
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-4l-4 4z"/>
+                        </svg>
+                        ¿Necesitas ayuda?
+                    `;
+                }
+            });
+        });
+    </script>
+
+    <!-- Chat Widget -->
+    <div id="chatWidgetContainer" class="fixed bottom-4 right-4 z-50">
+        <!-- Chat Button -->
+        <button id="chatButton" 
+                class="flex items-center bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 shadow-lg transform transition-transform duration-200 hover:scale-105">
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-4l-4 4z"/>
+            </svg>
+            ¿Necesitas ayuda?
+        </button>
+
+        <!-- Chat Window -->
+        <div id="chatWindow" class="hidden fixed bottom-20 right-4 w-96 h-[32rem] bg-white rounded-lg shadow-2xl overflow-hidden border border-gray-200 transform transition-all duration-300">
+            <iframe id="chatFrame" 
+                    src="{% url 'chat:chat_widget' %}" 
+                    class="w-full h-full border-none"
+                    allow="microphone"
+                    loading="lazy">
+            </iframe>
+        </div>
+        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-4l-4 4z"/>
+        </svg>
+        ¿Necesitas ayuda?
+      </button>
+      <div id="chat-container" class="hidden fixed bottom-20 right-4 w-96 h-[500px] bg-white rounded-lg shadow-xl overflow-hidden">
+        <iframe src="{% url 'chat:chat_widget' %}" 
+                class="w-full h-full border-0"
+                title="Chat Support">
+        </iframe>
+      </div>
+    </div>
+
+    <script>
+      // Chat Widget Controls
+      const chatButton = document.getElementById('chat-button');
+      const chatContainer = document.getElementById('chat-container');
+
+      chatButton.addEventListener('click', () => {
+        if (chatContainer.classList.contains('hidden')) {
+          chatContainer.classList.remove('hidden');
+          chatButton.textContent = 'Cerrar Chat';
+        } else {
+          chatContainer.classList.add('hidden');
+          chatButton.innerHTML = `
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-4l-4 4z"/>
+            </svg>
+            ¿Necesitas ayuda?
+          `;
+        }
+      });
+    </script>
+  </body>
+
+  {% block extra_js %}
+
+  {% endblock %}
+  <script src=" https://cdn.jsdelivr.net/npm/@tailwindcss/typography@0.5.16/src/index.min.js "></script>
+  <script src="{% static 'swiper-init.js' %}" type="module"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script>
+    var swiper1 = new Swiper('.mySwiper1', {
+      navigation: { nextEl: '.swiper-button-next1', prevEl: '.swiper-button-prev1' },
+      slidesPerView: 1,
+      spaceBetween: 10,
+      loop: true,
+      breakpoints: {
+        620: { slidesPerView: 1, spaceBetween: 20 },
+        680: { slidesPerView: 2, spaceBetween: 40 },
+        920: { slidesPerView: 3, spaceBetween: 40 },
+        1240: { slidesPerView: 4, spaceBetween: 50 }
+      }
+    })
+    var swiper2 = new Swiper('.mySwiper2', {
+      navigation: { nextEl: '.swiper-button-next2', prevEl: '.swiper-button-prev2' },
+      slidesPerView: 1,
+      spaceBetween: 10,
+      loop: true,
+      breakpoints: {
+        620: { slidesPerView: 1, spaceBetween: 20 },
+        680: { slidesPerView: 2, spaceBetween: 40 },
+        920: { slidesPerView: 3, spaceBetween: 40 },
+        1240: { slidesPerView: 4, spaceBetween: 50 }
+      }
+    })
+    var swiper3 = new Swiper('.mySwiper3', {
+      navigation: { nextEl: '.swiper-button-next3', prevEl: '.swiper-button-prev3' },
+      slidesPerView: 1,
+      spaceBetween: 10,
+      loop: true,
+      breakpoints: {
+        620: { slidesPerView: 1, spaceBetween: 20 },
+        680: { slidesPerView: 2, spaceBetween: 40 },
+        920: { slidesPerView: 3, spaceBetween: 40 },
+        1240: { slidesPerView: 4, spaceBetween: 50 }
+      }
+    })
+    var swiper4 = new Swiper('.mySwiper4', {
+      navigation: { nextEl: '.swiper-button-next4', prevEl: '.swiper-button-prev4' },
+      slidesPerView: 1,
+      spaceBetween: 10,
+      loop: true,
+      breakpoints: {
+        620: { slidesPerView: 1, spaceBetween: 20 },
+        680: { slidesPerView: 2, spaceBetween: 40 },
+        920: { slidesPerView: 3, spaceBetween: 40 },
+        1240: { slidesPerView: 4, spaceBetween: 50 }
+      }
+    })
+    var singleCardSwiper = new Swiper('.single-card-swiper', {
+      cssMode: true,
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev'
+      },
+      pagination: {
+        el: '.swiper-pagination'
+      },
+      mousewheel: true,
+      keyboard: true,
+      loop: true
+    })
+    
+    function toggleContent() {
+      const allContents = document.querySelectorAll('[id^="content-"]')
+      allContents.forEach((content) => {
+        content.classList.add('hidden')
+      })
+      const selectedRadio = document.querySelector('input[name="options"]:checked')
+      const contentId = `content-${selectedRadio.id}`
+      const content = document.getElementById(contentId)
+      if (content) {
+        content.classList.remove('hidden')
+        content.classList.add('flex')
+      }
+    }
+    const buttons = document.querySelectorAll('input[name="options"]')
+    buttons.forEach((button) => {
+      button.addEventListener('change', toggleContent)
+    })
+    
+    toggleContent()
+    
+    setTimeout(function () {
+      var successMessage = document.getElementById('notification-message')
+      if (successMessage) {
+        successMessage.style.transition = 'opacity 1s'
+        successMessage.style.opacity = '0'
+        setTimeout(() => (successMessage.style.display = 'none'), 1000)
+      }
+    }, 3000)
+    
+    setTimeout(function () {
+      var successMessage = document.getElementById('notification-message')
+      if (successMessage) {
+        successMessage.style.display = 'none'
+      }
+    }, 3000) // 3 seconds
+  </script>
+</html>

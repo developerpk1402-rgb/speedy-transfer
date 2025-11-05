@@ -1,0 +1,501 @@
+{% load static %}
+{% load cache %}
+<style>
+/* Enhanced visual highlight for selected transfer cards */
+.transfer-card {
+  position: relative;
+  border-radius: 1rem; /* match rounded-box look */
+  transition: transform 200ms ease, box-shadow 200ms ease, background-color 200ms ease, border-color 200ms ease;
+}
+
+.transfer-card.selected {
+  background: linear-gradient(90deg, rgba(74, 187, 193, 0.12), rgba(4, 120, 132, 0.06));
+  box-shadow: 0 10px 25px rgba(4, 120, 132, 0.25), 0 0 0 3px rgba(74, 187, 193, 0.65) inset;
+  transform: translateY(-2px);
+  border-color: #4abbc1;
+}
+
+.transfer-card.selected::after {
+  content: 'Selected';
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: #4abbc1;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  padding: 6px 10px;
+  border-radius: 9999px;
+  box-shadow: 0 4px 12px rgba(4, 120, 132, 0.3);
+}
+
+.transfer-card .card-title,
+.transfer-card .stat-value {
+  transition: color 200ms ease;
+}
+
+.transfer-card.selected .card-title,
+.transfer-card.selected .stat-value:not(.price-value) {
+  color: #047884; /* accent text */
+}
+
+.transfer-card.selected img {
+  outline: 3px solid rgba(74, 187, 193, 0.5);
+  outline-offset: 2px;
+  border-radius: 0.75rem;
+}
+
+@keyframes pulseRing {
+  0% { box-shadow: 0 0 0 0 rgba(74, 187, 193, 0.5); }
+  70% { box-shadow: 0 0 0 12px rgba(74, 187, 193, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(74, 187, 193, 0); }
+}
+
+.transfer-card.selected::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  pointer-events: none;
+  animation: pulseRing 1.6s ease-out;
+}
+</style>
+<section id="results" class="grid items-center gap-8 py-16">
+  <article class="prose lg:prose-xl pl-4">
+    <h1 class="text-2xl antialiased md:subpixel-antialiased font-bold">Select transfer for your ARRIVAL</h1>
+  </article>
+   
+  <div class="overflow-x-auto">
+    {% if transfer_options %}
+      {% for option in transfer_options %}
+      <div class="transfer-card card lg:card-side bg-base-100 shadow-sm card-border p-4 mb-2 transition-all duration-300 ease-in-out hover:shadow-xl cursor-pointer"
+           data-transfer-id="{{ option.id }}"
+           data-rate-id="{{ option.rate_id }}"
+           data-car-id="{{ option.car_id }}"
+           data-unit-number="{{ option.unit_number }}"
+           data-vehicle-id="{{ option.id }}"
+           data-car-capacity="{{ option.car_capacity }}"
+           data-travel-type="{{ option.travel_type }}"
+           data-price="{{ option.price }}"
+           data-image-url="{{ option.image_url }}"
+           data-departure-date="{{ option.departure_date }}"
+           data-departure-time="{{ option.departure_time }}">
+        <figure>
+          {% if option.image_url %}
+            <img
+              src="{{ option.image_url }}"
+              alt="{{ option.car_name }}"
+              class="rounded-box w-80 h-60 object-cover rounded-lg shadow-lg"
+              onerror="console.log('Image failed: {{ option.image_url }}'); this.src='https://placehold.co/192x128/4abbc1/ffffff?text={{ option.car_name|urlencode }}'; this.onerror=null;" />
+          {% else %}
+            <img
+              src="https://placehold.co/192x128/4abbc1/ffffff?text={{ option.car_name|urlencode }}"
+              alt="{{ option.car_name }}"
+              class="rounded-box w-100 max-w-sm rounded-lg shadow-2xl" />
+          {% endif %}
+        </figure>
+        <div class="card-body">
+          <h2 class="card-title text-xl font-bold">{{ option.car_name }}</h2>
+          <p>Max {{ option.car_capacity }} people per vehicle</p>
+          {% if option.unit_number > 1 %}
+          <p class="text-sm text-gray-600">Unit #{{ option.unit_number|stringformat:"03d" }} • {{ option.availability_status|title }}</p>
+          {% endif %}
+          <div class="stats stats-vertical lg:stats-horizontal shadow">
+            <div class="stat">
+              <div class="stat-title">Departure date</div>
+              <div class="stat-value">{{ option.departure_date }}</div>
+            </div>
+                     
+            <div class="stat">
+              <div class="stat-title">Departure time</div>
+              <div class="stat-value">{{ option.departure_time }}</div>
+            </div>
+                     
+            <div class="stat">
+              <div class="stat-title">Per vehicle</div>
+              <div class="stat-value price-value text-success" data-debug-price="{{ option.price }}">${{ option.price }} USD</div>
+            </div>
+          </div>
+          <div class="card-actions justify-end">
+            <button class="select-btn btn btn-block bg-[#4abbc1] border-0 text-white hover:bg-[#3fa8b0]">
+              Select {% if option.total_fleet_size > 1 %}Unit #{{ option.unit_number|stringformat:"03d" }}{% endif %}
+            </button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <!-- Debug section to show what data is available -->
+      <div class="alert alert-warning">
+        <div>
+          <h3>No transfer options found</h3>
+          
+          {% if no_rates_message %}
+            <p class="text-red-600 font-semibold">{{ no_rates_message }}</p>
+          {% else %}
+            <p><strong>Debug Info:</strong></p>
+            <ul>
+              <li>Pickup Location: {{ pickup_location }}</li>
+              <li>Car Type: {{ car_type }}</li>
+              <li>Trip Type: {{ trip_type }}</li>
+              <li>People: {{ people }}</li>
+            </ul>
+            <p>Please check if:</p>
+            <ul>
+              <li>Cars exist in the database with the selected type</li>
+              <li>Rates are configured for the selected zone and car type</li>
+              <li>The pickup location is valid</li>
+            </ul>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+    
+    <div class="flex flex-col sm:flex-row justify-between items-center gap-3 mt-4">
+      <div id="selection-status" class="text-sm text-gray-600">
+        Select vehicles to cover your passengers.
+      </div>
+      <a href="{% url 'core:summary_view' %}" class="book-btn btn btn-wide sm:btn-block rounded-full text-white bg-[#4abbc1] hover:bg-[#047884] border-0 shadow-lg transition-all">
+        Book Transfers
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const transferCards = document.querySelectorAll('.transfer-card');
+  const bookButton = document.querySelector('.book-btn');
+  const selectionStatus = document.getElementById('selection-status');
+
+  let selectedTransfers = [];
+
+  // Helper to safely parse integers
+  function toInt(value, fallback) {
+    const n = parseInt(value, 10);
+    return isNaN(n) ? (fallback ?? 0) : n;
+  }
+
+  function getSelectedOptionText(selectEl) {
+    if (!selectEl) return '';
+    const opt = selectEl.options[selectEl.selectedIndex];
+    return opt ? opt.textContent.trim() : '';
+  }
+
+  function collectFechasData() {
+    const pickupDT = document.querySelector('input[name="pickup_datetime"]');
+    const pickupLoc = document.querySelector('select[name="pickup_location"]');
+    const dropoffLoc = document.querySelector('select[name="dropoff_location"]');
+    const returnDT = document.querySelector('input[name="return_datetime"]');
+    const returnPickupLoc = document.querySelector('select[name="return_pickup_location"]');
+    const returnDropoffLoc = document.querySelector('select[name="return_dropoff_location"]');
+    const people = document.querySelector('input[name="people"]');
+    const carType = document.querySelector('select[name="car_type"]');
+    const tripType = document.querySelector('input[name="trip_type"]:checked');
+
+    const pickupValue = pickupDT?.value || '';
+    const returnValue = returnDT?.value || '';
+
+    const fechasData = {
+      pickup_datetime: pickupValue,
+      pickup_date: pickupValue ? (pickupValue.split('T')[0] || '') : '',
+      pickup_time: pickupValue ? (pickupValue.split('T')[1] || '') : '',
+      pickup_location_id: pickupLoc?.value || '',
+      pickup_location_name: getSelectedOptionText(pickupLoc),
+      dropoff_location_id: dropoffLoc?.value || '',
+      dropoff_location_name: getSelectedOptionText(dropoffLoc),
+      return_datetime: returnValue,
+      return_date: returnValue ? (returnValue.split('T')[0] || '') : '',
+      return_time: returnValue ? (returnValue.split('T')[1] || '') : '',
+      return_pickup_location_id: returnPickupLoc?.value || '',
+      return_pickup_location_name: getSelectedOptionText(returnPickupLoc),
+      return_dropoff_location_id: returnDropoffLoc?.value || '',
+      return_dropoff_location_name: getSelectedOptionText(returnDropoffLoc),
+      people: people?.value || '',
+      car_type_value: carType?.value || '',
+      car_type_label: getSelectedOptionText(carType),
+      trip_type: tripType?.value || 'oneway'
+    };
+
+    return fechasData;
+  }
+
+  function getRequiredPassengers() {
+    const peopleInput = document.querySelector('input[name="people"]');
+    return toInt(peopleInput?.value || '0', 0);
+  }
+
+  function getMaxVehicleCapacity() {
+    let maxCapacity = 0;
+    transferCards.forEach(card => {
+      const cap = toInt(card.getAttribute('data-car-capacity') || '0', 0);
+      if (cap > maxCapacity) maxCapacity = cap;
+    });
+    return maxCapacity;
+  }
+
+  function isSingleSelectionRequired() {
+    const requiredPassengers = getRequiredPassengers();
+    if (selectedTransfers.length === 0) return false;
+    const firstCapacity = toInt(selectedTransfers[0].car_capacity, 0);
+    // Enforce single selection when the currently selected single vehicle can cover all passengers
+    return requiredPassengers > 0 && firstCapacity > 0 && requiredPassengers <= firstCapacity;
+  }
+
+  function updateBookButtonState() {
+    const requiredPassengers = getRequiredPassengers();
+    const totalCapacity = selectedTransfers.reduce((sum, t) => sum + (toInt(t.car_capacity, 0)), 0);
+    const totalVehicles = selectedTransfers.length;
+    const covered = requiredPassengers > 0 ? totalCapacity >= requiredPassengers : totalVehicles > 0;
+    const remaining = Math.max(0, requiredPassengers - totalCapacity);
+
+    // Enforce single-selection mode if passengers fit in one vehicle
+    const singleMode = isSingleSelectionRequired();
+    if (singleMode && selectedTransfers.length > 1) {
+      const keepId = selectedTransfers[0]?.id;
+      selectedTransfers = keepId ? selectedTransfers.filter(t => t.id === keepId) : [];
+      transferCards.forEach(card => {
+        const cardId = card.getAttribute('data-transfer-id');
+        if (cardId !== keepId) {
+          card.classList.remove('selected', 'ring-4', 'ring-offset-2', 'ring-[#4abbc1]', 'shadow-2xl');
+        }
+      });
+    }
+
+    if (selectionStatus) {
+      if (singleMode) {
+        selectionStatus.textContent = requiredPassengers > 0
+          ? `Select 1 vehicle • Must cover ${requiredPassengers} pax`
+          : 'Select 1 vehicle';
+      } else {
+        if (requiredPassengers > 0) {
+          selectionStatus.textContent = `Capacity selected: ${totalCapacity}/${requiredPassengers}` + (remaining > 0 ? ` • Need ${remaining} more seat${remaining === 1 ? '' : 's'}` : ' • Ready');
+        } else {
+          selectionStatus.textContent = totalVehicles > 0 ? `Selected ${totalVehicles} vehicle${totalVehicles === 1 ? '' : 's'}` : 'Select vehicles to cover your passengers.';
+        }
+      }
+    }
+
+    if (!bookButton) return;
+
+    // Preserve original href once
+    const currentHref = bookButton.getAttribute('href') || "{% url 'core:summary_view' %}";
+    if (!bookButton.getAttribute('data-original-href')) {
+      bookButton.setAttribute('data-original-href', currentHref);
+    }
+
+    if (covered) {
+      bookButton.classList.remove('btn-disabled');
+      bookButton.style.pointerEvents = 'auto';
+      bookButton.style.opacity = '1';
+      const vehiclesLabel = `${totalVehicles} vehicle${totalVehicles === 1 ? '' : 's'}`;
+      const paxLabel = requiredPassengers > 0 ? ` • Covers ${requiredPassengers} pax` : '';
+      bookButton.textContent = `Book ${vehiclesLabel}${paxLabel}`;
+      const originalHref = bookButton.getAttribute('data-original-href');
+      if (originalHref) {
+        bookButton.setAttribute('href', originalHref);
+      }
+    } else {
+      bookButton.classList.add('btn-disabled');
+      bookButton.style.pointerEvents = 'none';
+      bookButton.style.opacity = '0.6';
+      if (singleMode) {
+        if (requiredPassengers > 0) {
+          bookButton.textContent = `Select a vehicle that covers ${requiredPassengers} pax`;
+        } else {
+          bookButton.textContent = 'Select 1 vehicle first';
+        }
+      } else {
+        if (requiredPassengers > 0) {
+          bookButton.textContent = `Select more vehicles (${totalCapacity}/${requiredPassengers} seats)`;
+        } else {
+          bookButton.textContent = 'Select vehicles first';
+        }
+      }
+      bookButton.removeAttribute('href');
+    }
+  }
+
+  // Initialize button state
+  updateBookButtonState();
+  
+  // Debug: Check price elements and fix any issues
+  console.log('=== PRICE DEBUG ===');
+  console.log('Page loaded at:', new Date().toISOString());
+  console.log('Cache busting timestamp:', Date.now());
+  
+  const priceElements = document.querySelectorAll('.price-value');
+  console.log(`Found ${priceElements.length} price elements`);
+  
+  priceElements.forEach((el, index) => {
+    const debugPrice = el.getAttribute('data-debug-price');
+    const currentText = el.textContent;
+    
+    console.log(`Price element ${index}:`, {
+      textContent: currentText,
+      innerHTML: el.innerHTML,
+      dataDebugPrice: debugPrice,
+      dataPrice: el.getAttribute('data-price')
+    });
+    
+    // Fix empty or $0.00 prices
+    if (!currentText || currentText.includes('$0.00') || currentText.trim() === '') {
+      console.log(`Fixing empty price for element ${index}`);
+      if (debugPrice) {
+        el.textContent = `$${debugPrice} USD`;
+        el.innerHTML = `$${debugPrice} USD`;
+      }
+    }
+  });
+
+  transferCards.forEach((card, index) => {
+    card.addEventListener('click', function () {
+      // Identify card
+      const transferId = this.getAttribute('data-transfer-id') || `vehicle_${index}`;
+      const existingIndex = selectedTransfers.findIndex(t => t.id === transferId);
+
+      // Extract data from attributes
+      const cardTitle = this.querySelector('.card-title')?.textContent || 'Unknown Vehicle';
+      const priceElement = this.querySelector('.price-value');
+      const priceText = priceElement ? priceElement.textContent : '$0 USD';
+      const rateId = this.getAttribute('data-rate-id') || transferId;
+      const carId = this.getAttribute('data-car-id') || '';
+      const unitNumber = this.getAttribute('data-unit-number') || '1';
+      const imageUrl = this.getAttribute('data-image-url') || this.querySelector('img')?.src || '';
+      const carCapacity = toInt(this.getAttribute('data-car-capacity') || '0', 0);
+      const travelType = this.getAttribute('data-travel-type') || '';
+      const priceNumeric = parseFloat(this.getAttribute('data-price') || '0');
+      const departureDate = this.getAttribute('data-departure-date') || '';
+      const departureTime = this.getAttribute('data-departure-time') || '';
+
+      const singleMode = isSingleSelectionRequired();
+
+      if (singleMode) {
+        if (existingIndex >= 0) {
+          // Already selected; keep selected in single mode
+          updateBookButtonState();
+          return;
+        } else {
+          // Switch selection to this card only
+          transferCards.forEach(c => {
+            if (c !== this) c.classList.remove('selected', 'ring-4', 'ring-offset-2', 'ring-[#4abbc1]', 'shadow-2xl');
+          });
+          selectedTransfers = [];
+          this.classList.add('selected', 'ring-4', 'ring-offset-2', 'ring-[#4abbc1]', 'shadow-2xl');
+          selectedTransfers.push({
+            id: transferId,
+            rate_id: rateId,
+            car_id: carId,
+            unit_number: unitNumber,
+            name: cardTitle,
+            price_text: priceText,
+            price_numeric: isNaN(priceNumeric) ? 0 : priceNumeric,
+            currency: 'USD',
+            date: departureDate,
+            time: departureTime,
+            image_url: imageUrl,
+            car_capacity: carCapacity,
+            travel_type: travelType,
+            quantity: 1,
+            selection_type: 'single_vehicle'
+          });
+        }
+      } else {
+        if (existingIndex >= 0) {
+          // Deselect: remove selection
+          this.classList.remove('selected', 'ring-4', 'ring-offset-2', 'ring-[#4abbc1]', 'shadow-2xl');
+          selectedTransfers.splice(existingIndex, 1);
+        } else {
+          // Select: add selection
+          this.classList.add('selected', 'ring-4', 'ring-offset-2', 'ring-[#4abbc1]', 'shadow-2xl');
+          selectedTransfers.push({
+            id: transferId,
+            rate_id: rateId,
+            car_id: carId,
+            unit_number: unitNumber,
+            name: cardTitle,
+            price_text: priceText,
+            price_numeric: isNaN(priceNumeric) ? 0 : priceNumeric,
+            currency: 'USD',
+            date: departureDate,
+            time: departureTime,
+            image_url: imageUrl,
+            car_capacity: carCapacity,
+            travel_type: travelType,
+            quantity: 1,
+            selection_type: 'multi_vehicle'
+          });
+        }
+      }
+
+      updateBookButtonState();
+    });
+  });
+
+  // Re-evaluate when people input changes
+  const peopleInput = document.querySelector('input[name="people"]');
+  if (peopleInput) {
+    peopleInput.addEventListener('input', updateBookButtonState);
+    peopleInput.addEventListener('change', updateBookButtonState);
+  }
+
+  function validateRoundtripFieldsIfNeeded() {
+    const tripType = document.querySelector('input[name="trip_type"]:checked')?.value || 'oneway';
+    if (tripType !== 'roundtrip') return true;
+
+    const returnDT = document.querySelector('input[name="return_datetime"]');
+    const returnPickupLoc = document.querySelector('select[name="return_pickup_location"]');
+    const returnDropoffLoc = document.querySelector('select[name="return_dropoff_location"]');
+
+    if (!returnDT?.value || !returnPickupLoc?.value || !returnDropoffLoc?.value) {
+      alert('Please complete the Return date/time, pickup and dropoff for a roundtrip.');
+      return false;
+    }
+    return true;
+  }
+
+  // Book button click handler
+  if (bookButton) {
+    bookButton.addEventListener('click', function(e) {
+      const requiredPassengers = getRequiredPassengers();
+      const totalCapacity = selectedTransfers.reduce((sum, t) => sum + (toInt(t.car_capacity, 0)), 0);
+      const covered = requiredPassengers > 0 ? totalCapacity >= requiredPassengers : selectedTransfers.length > 0;
+
+      if (!covered || !this.getAttribute('href')) {
+        e.preventDefault();
+        e.stopPropagation();
+        alert(requiredPassengers > 0 ? 'Please select enough vehicles to cover all passengers.' : 'Please select at least one vehicle.');
+        return false;
+      }
+
+      if (!validateRoundtripFieldsIfNeeded()) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+
+      // Store selection and fechas data
+      try {
+        const fechasData = collectFechasData();
+        sessionStorage.setItem('selectedTransfers', JSON.stringify(selectedTransfers));
+        // Backward compatibility: also store the first selected as selectedTransfer
+        if (selectedTransfers.length > 0) {
+          sessionStorage.setItem('selectedTransfer', JSON.stringify(selectedTransfers[0]));
+        }
+        sessionStorage.setItem('fechasData', JSON.stringify(fechasData));
+        sessionStorage.setItem('bookingData', JSON.stringify({
+          vehicleType: selectedTransfers.length > 1 ? 'multiple' : 'individual',
+          selectedCount: selectedTransfers.length,
+          selectionTimestamp: new Date().toISOString(),
+          sessionId: Math.random().toString(36).substr(2, 9)
+        }));
+      } catch (err) {
+        console.warn('Could not save selection to sessionStorage:', err);
+      }
+
+      return true;
+    });
+  }
+});
+</script>

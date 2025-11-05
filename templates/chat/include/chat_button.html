@@ -1,0 +1,47 @@
+{% load static %}
+<!-- Chat Button -->
+<div id="chatWidgetContainer" class="fixed bottom-4 right-4 z-50">
+    <!-- Chat Button -->
+    <button id="chatButton" 
+            class="flex items-center bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 shadow-lg">
+        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-4l-4 4z"/>
+        </svg>
+        ¿Necesitas ayuda?
+    </button>
+
+    <!-- Chat Window -->
+    <div id="chatWindow" class="hidden fixed bottom-20 right-4 w-96 h-[32rem] bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
+        <iframe id="chatFrame" 
+                src="{% url 'chat:chat_widget' %}" 
+                class="w-full h-full border-none">
+        </iframe>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatButton = document.getElementById('chatButton');
+        const chatWindow = document.getElementById('chatWindow');
+        
+        chatButton.addEventListener('click', function() {
+            if (chatWindow.classList.contains('hidden')) {
+                chatWindow.classList.remove('hidden');
+                chatButton.innerHTML = `
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    Cerrar Chat
+                `;
+            } else {
+                chatWindow.classList.add('hidden');
+                chatButton.innerHTML = `
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-4l-4 4z"/>
+                    </svg>
+                    ¿Necesitas ayuda?
+                `;
+            }
+        });
+    });
+</script>

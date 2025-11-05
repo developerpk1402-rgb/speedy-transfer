@@ -1,0 +1,112 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reports Panel</title>
+    <link rel="stylesheet" href="{% static 'reports.css' %}">
+  </head>
+  <body>
+    <header class="rp-header">
+      <div class="container">
+        <div class="brand">Reports Panel</div>
+        <div class="user">Welcome, {{ request.user.get_username }} &nbsp; <a class="btn-logout" href="{% url 'reports:logout' %}">Logout</a></div>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="controls">
+        <input id="search" placeholder="Search reports..." />
+        <div class="filters">
+          <label>Category:</label>
+          <select id="category">
+            <option value="all">All</option>
+            <option value="Sales">Sales</option>
+            <option value="Bookings">Bookings</option>
+            <option value="Finance">Finance</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="tiles" class="tiles">
+        {% for t in tiles %}
+          <div class="card" data-category="{{ t.category }}">
+            <div class="card-image"><img src="{% static 'images/' %}{{ t.image }}" alt="{{ t.title }}"></div>
+            <div class="card-body">
+              <div class="card-header">
+                <h3>{{ t.title }}</h3>
+                <span class="badge">{{ t.category }}</span>
+              </div>
+              <p class="muted">{{ t.description }}</p>
+
+              <div class="stat">
+                <div class="stat-value">{{ t.stat_value }}</div>
+                <div class="stat-label">{{ t.stat_label }}</div>
+              </div>
+
+              <div class="meta">
+                <div>Format: <strong>{{ t.format }}</strong></div>
+                <div>Created: <strong>{{ t.created }}</strong></div>
+              </div>
+              <div class="card-actions">
+                <button class="btn preview" data-url="{{ t.url }}">Preview</button>
+                <a class="btn download" href="{{ t.url }}download/pdf/">Download</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Preview modal -->
+      <div id="previewModal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+          <button id="closeModal" class="modal-close">×</button>
+          <iframe id="previewFrame" src="" frameborder="0"></iframe>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // Simple search + category filter
+      (function(){
+        const search = document.getElementById('search');
+        const category = document.getElementById('category');
+        const tiles = Array.from(document.querySelectorAll('#tiles .card'));
+
+        function applyFilter(){
+          const q = search.value.trim().toLowerCase();
+          const cat = category.value;
+          tiles.forEach(card => {
+            const title = card.querySelector('h3').textContent.toLowerCase();
+            const desc = card.querySelector('.muted').textContent.toLowerCase();
+            const cardCat = card.dataset.category;
+            const matchesQ = q === '' || title.includes(q) || desc.includes(q);
+            const matchesC = cat === 'all' || cardCat === cat;
+            card.style.display = (matchesQ && matchesC) ? '' : 'none';
+          });
+        }
+        search.addEventListener('input', applyFilter);
+        category.addEventListener('change', applyFilter);
+
+        // Preview modal
+        const previewModal = document.getElementById('previewModal');
+        const previewFrame = document.getElementById('previewFrame');
+        const closeModal = document.getElementById('closeModal');
+        document.querySelectorAll('.btn.preview').forEach(btn => {
+          btn.addEventListener('click', e => {
+            const url = btn.dataset.url;
+            previewFrame.src = url;
+            previewModal.style.display = 'flex';
+            previewModal.setAttribute('aria-hidden', 'false');
+          });
+        });
+        closeModal.addEventListener('click', ()=>{
+          previewFrame.src = '';
+          previewModal.style.display = 'none';
+          previewModal.setAttribute('aria-hidden', 'true');
+        });
+      })();
+    </script>
+  </body>
+</html>

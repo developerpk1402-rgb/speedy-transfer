@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sold History</title>
+    <style>
+      body { font-family: Arial, sans-serif; background:#f4f6f8; }
+      .wrap { max-width:1100px; margin:36px auto; }
+      .section { background:#fff; padding:16px; border-radius:6px; margin-bottom:16px }
+      table { width:100%; border-collapse:collapse }
+      th, td { padding:8px; border-bottom:1px solid #eee; text-align:left }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="wrap">
+      <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px">
+        <h1>Sold History</h1>
+        <div>
+          <a href="{% url 'reports:sold_csv' %}">CSV</a>
+          &nbsp;|&nbsp;
+          <a href="{% url 'reports:sold_xlsx' %}">Excel</a>
+          &nbsp;|&nbsp;
+          <a href="{% url 'reports:sold_pdf' %}">PDF</a>
+        </div>
+      </header>
+
+      <div class="section">
+        <h2>Payments (last 30 days)</h2>
+        <canvas id="sellsChart" width="800" height="250"></canvas>
+      </div>
+
+      {{ labels|json_script:"labels-data" }}
+      {{ data|json_script:"data-data" }}
+
+      <div class="section">
+        <h2>Recent Bookings</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Client</th>
+              <th>Name</th>
+              <th>Pickup</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for b in bookings %}
+              <tr>
+                <td>{{ b.id }}</td>
+                <td>{{ b.client_id }}</td>
+                <td>{{ b.customer_name }}</td>
+                <td>{{ b.pickup_date_time }}</td>
+                <td>{{ b.total_amount }} {{ b.currency }}</td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="5">No bookings found.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <script>
+        (function() {
+          const labelsData = JSON.parse(document.getElementById('labels-data').textContent);
+          const dataSet = JSON.parse(document.getElementById('data-data').textContent);
+          const ctx = document.getElementById('sellsChart').getContext('2d');
+          new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: labelsData,
+              datasets: [{
+                label: 'Total',
+                data: dataSet,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                fill: true,
+              }]
+            },
+            options: {
+              responsive: true,
+              scales: { y: { beginAtZero: true } }
+            }
+          });
+        })();
+      </script>
+    </div>
+  </body>
+</html>

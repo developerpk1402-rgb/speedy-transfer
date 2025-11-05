@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sells History</title>
+    <style>
+      body { font-family: Arial, sans-serif; background:#f4f6f8; }
+      .wrap { max-width:900px; margin:36px auto; }
+      header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px }
+      .controls { display:flex; gap:8px }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>Sells History (last 30 days)</h1>
+        <div class="controls">
+          <a href="{% url 'reports:sells_csv' %}">Download CSV</a>
+          &nbsp;|&nbsp;
+          <a href="{% url 'reports:sells_xlsx' %}">Download Excel</a>
+          &nbsp;|&nbsp;
+          <a href="{% url 'reports:sells_pdf' %}">Download PDF</a>
+        </div>
+      </header>
+
+      <canvas id="sellsChart" width="800" height="250"></canvas>
+
+      {{ labels|json_script:"labels-data" }}
+      {{ data|json_script:"data-data" }}
+
+      <script>
+        (function() {
+          const labelsData = JSON.parse(document.getElementById('labels-data').textContent);
+          const dataSet = JSON.parse(document.getElementById('data-data').textContent);
+          const ctx = document.getElementById('sellsChart').getContext('2d');
+          new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: labelsData,
+              datasets: [{
+                label: 'Total',
+                data: dataSet,
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                fill: true,
+              }]
+            },
+            options: {
+              responsive: true,
+              scales: { y: { beginAtZero: true } }
+            }
+          });
+        })();
+      </script>
+    </div>
+  </body>
+</html>

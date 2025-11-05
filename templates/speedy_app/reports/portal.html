@@ -1,0 +1,10 @@
+{% extends 'speedy_app/base.html' %}
+{% block content %}
+<div class="py-8">
+  <h2 class="text-2xl font-bold mb-4">Reporting Portal</h2>
+  <ul class="list-disc ml-6">
+    <li><a href="{% url 'core:reports_sold_orders' %}" class="text-blue-600">Sold Orders</a> — list of bookings and CSV export</li>
+    <li><a href="{% url 'core:reports_sales_history' %}" class="text-blue-600">Sales History</a> — daily sales aggregation and CSV export</li>
+  </ul>
+</div>
+{% endblock %}

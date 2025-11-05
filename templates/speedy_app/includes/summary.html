@@ -1,0 +1,222 @@
+{% load static %}
+<!-- Cart -->
+<section id="summary" class="bg-white py-16">
+  <div class="container mx-auto px-4">
+      <h1 class="text-2xl font-semibold mb-4">Shopping Cart</h1>
+      <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-3/4">
+              <div class="bg-white rounded-lg shadow-md p-6 mb-4">
+                  <div class="overflow-x-auto">
+                      <table class="w-full">
+                          <thead>
+                              <tr>
+                                  <th class="text-center md:text-left font-semibold">Product</th>
+                                  <th class="text-center font-semibold">Price</th>
+                                  <th class="text-center md:text-right font-semibold">Total</th>
+                              </tr>
+                          </thead>
+                          <tbody id="cart-items">
+                              <tr id="cart-empty-row" class="pb-4 border-b border-gray-line hidden">
+                                  <td colspan="3" class="px-1 py-8 text-center text-gray-500">No selection found. Please go back and select a transfer.</td>
+                              </tr>
+                              <tr id="cart-item-row" class="pb-4 border-b border-gray-line hidden">
+                                  <td class="px-1 py-4">
+                                      <div class="flex items-center flex-col sm:flex-row text-center sm:text-left">
+                                          <img id="cart-image" class="h-16 w-16 md:h-24 md:w-24 sm:mr-8 mb-4 sm:mb-0" src="/assets/images/background-hero.jpeg" alt="Product image">
+                                          <div class="text-left">
+                                            <p id="cart-title" class="text-sm md:text-base md:font-semibold">Selected Vehicle</p>
+                                            <p id="cart-subtitle" class="text-xs text-gray-600"></p>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  <td class="px-1 py-4 text-center" id="cart-price">$0.00</td>
+                                  <td class="px-1 py-4 text-right" id="cart-total">$0.00</td>
+                              </tr>
+                              <tr id="cart-multi-start" class="hidden"><td colspan="3" class="px-1 py-2 text-gray-500">Selected vehicles</td></tr>
+                          </tbody>
+                      </table>
+                      <div class="px-1 flex flex-col lg:flex-row justify-between items-center mt-10">
+                          <div class="flex items-center">
+                              <input type="text" placeholder="Coupon code" class="border border-gray-300 rounded-l-full py-2 px-4 focus:outline-none">
+                              <button class="bg-[#4abbc1] hover:bg-[#047884] text-white rounded-r-full py-2 px-4 border-0">Apply Coupon</button>
+                          </div>
+                          
+                      </div>
+                  </div>
+              </div>
+
+              <div class="bg-white rounded-lg shadow-md p-6 mb-4">
+                <h2 class="text-lg font-semibold mb-4">Fechas & Trip Details</h2>
+                <div id="fechas-details" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p><span class="font-semibold">Pickup:</span> <span id="f-pickup"></span></p>
+                    <p><span class="font-semibold">From:</span> <span id="f-pickup-loc"></span></p>
+                    <p><span class="font-semibold">To:</span> <span id="f-dropoff-loc"></span></p>
+                  </div>
+                  <div>
+                    <p><span class="font-semibold">Return:</span> <span id="f-return"></span></p>
+                    <p><span class="font-semibold">From:</span> <span id="f-return-pickup-loc"></span></p>
+                    <p><span class="font-semibold">To:</span> <span id="f-return-dropoff-loc"></span></p>
+                  </div>
+                  <div>
+                    <p><span class="font-semibold">People:</span> <span id="f-people"></span></p>
+                    <p><span class="font-semibold">Trip Type:</span> <span id="f-trip-type"></span></p>
+                    <p><span class="font-semibold">Car Type:</span> <span id="f-car-type"></span></p>
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div class="md:w-1/4">
+              <div class="bg-white rounded-lg shadow-md p-6">
+                  <h2 class="text-lg font-semibold mb-4">Summary</h2>
+                  <div class="flex justify-between mb-2 text-sm text-gray-600">
+                    <p>Capacity selected</p>
+                    <p id="s-capacity">0/0</p>
+                  </div>
+                  <div class="flex justify-between mb-4">
+                      <p>Subtotal</p>
+                      <p id="s-subtotal">$0.00</p>
+                  </div>
+                  <div class="flex justify-between mb-2">
+                      <p class="font-semibold">Total</p>
+                      <p class="font-semibold" id="s-total">$0.00</p>
+                  </div>
+                  <a href="{% url 'core:checkout_view' %}" class="bg-[#4abbc1] hover:bg-[#047884] text-white border-0 py-2 px-4 rounded-full mt-4 w-full text-center block">Proceed to Checkout</a>
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+
+<script>
+(function() {
+  function fmtMoney(amount, currency) {
+    const num = isNaN(amount) ? 0 : Number(amount);
+    return new Intl.NumberFormat(undefined, { style: 'currency', currency: currency || 'USD', minimumFractionDigits: 2 }).format(num);
+  }
+
+  function byId(id) { return document.getElementById(id); }
+
+  const selectedTransferRaw = sessionStorage.getItem('selectedTransfer');
+  const selectedTransfersRaw = sessionStorage.getItem('selectedTransfers');
+  const fechasDataRaw = sessionStorage.getItem('fechasData');
+
+  let selectedTransfer = null; // legacy single
+  let selectedTransfers = null; // new multiple
+  let fechasData = null;
+
+  try { selectedTransfer = selectedTransferRaw ? JSON.parse(selectedTransferRaw) : null; } catch (e) {}
+  try { selectedTransfers = selectedTransfersRaw ? JSON.parse(selectedTransfersRaw) : null; } catch (e) {}
+  try { fechasData = fechasDataRaw ? JSON.parse(fechasDataRaw) : null; } catch (e) {}
+
+  const tbody = byId('cart-items');
+  const emptyRow = byId('cart-empty-row');
+  const templateRow = byId('cart-item-row');
+  const multiStart = byId('cart-multi-start');
+
+  // Summary totals
+  const sCapacity = byId('s-capacity');
+  const sSubtotal = byId('s-subtotal');
+  const sTotal = byId('s-total');
+
+  // Fechas fields
+  const fPickup = byId('f-pickup');
+  const fPickupLoc = byId('f-pickup-loc');
+  const fDropoffLoc = byId('f-dropoff-loc');
+  const fReturn = byId('f-return');
+  const fReturnPickupLoc = byId('f-return-pickup-loc');
+  const fReturnDropoffLoc = byId('f-return-dropoff-loc');
+  const fPeople = byId('f-people');
+  const fTripType = byId('f-trip-type');
+  const fCarType = byId('f-car-type');
+
+  function ensureArray(input, legacy) {
+    if (Array.isArray(input)) return input;
+    if (legacy && legacy !== null) return [legacy];
+    return [];
+  }
+
+  function cloneRow() {
+    const row = templateRow.cloneNode(true);
+    row.id = '';
+    row.classList.remove('hidden');
+    return row;
+  }
+
+  function renderCartRows(items) {
+    // Remove any previously inserted dynamic rows
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    rows.forEach(r => {
+      if (r !== templateRow && r !== emptyRow && r !== multiStart) {
+        r.remove();
+      }
+    });
+
+    if (!items || items.length === 0) {
+      emptyRow.classList.remove('hidden');
+      templateRow.classList.add('hidden');
+      multiStart.classList.add('hidden');
+      return;
+    }
+
+    emptyRow.classList.add('hidden');
+    templateRow.classList.add('hidden');
+    multiStart.classList.remove('hidden');
+
+    items.forEach(it => {
+      const row = cloneRow();
+      const img = row.querySelector('#cart-image');
+      const title = row.querySelector('#cart-title');
+      const subtitle = row.querySelector('#cart-subtitle');
+      const price = row.querySelector('#cart-price');
+      const total = row.querySelector('#cart-total');
+
+      img.src = it.image_url || img.src;
+      title.textContent = it.name || 'Selected Vehicle';
+      subtitle.textContent = [
+        it.date ? `Date: ${it.date}` : '',
+        it.time ? `Time: ${it.time}` : '',
+        it.car_capacity ? `Capacity: ${it.car_capacity}` : ''
+      ].filter(Boolean).join(' • ');
+
+      const currency = it.currency || 'USD';
+      const unit = Number(it.price_numeric || 0);
+      price.textContent = fmtMoney(unit, currency);
+      total.textContent = fmtMoney(unit, currency);
+
+      tbody.appendChild(row);
+    });
+  }
+
+  function recalcTotals(items) {
+    const currency = (items[0] && items[0].currency) || 'USD';
+    const subtotal = items.reduce((sum, it) => sum + Number(it.price_numeric || 0), 0);
+    const grand = subtotal;
+    const required = Number((fechasData && fechasData.people) || 0) || 0;
+    const capacity = items.reduce((sum, it) => sum + Number(it.car_capacity || 0), 0);
+
+    sCapacity.textContent = `${capacity}/${required}`;
+    sSubtotal.textContent = fmtMoney(subtotal, currency);
+    sTotal.textContent = fmtMoney(grand, currency);
+
+    // Fechas fields
+    try {
+      const pickup = (fechasData && fechasData.pickup_datetime) ? fechasData.pickup_datetime.replace('T', ' ') : '';
+      const ret = (fechasData && fechasData.return_datetime) ? fechasData.return_datetime.replace('T', ' ') : '';
+      fPickup.textContent = pickup;
+      fPickupLoc.textContent = (fechasData && fechasData.pickup_location_name) || '';
+      fDropoffLoc.textContent = (fechasData && fechasData.dropoff_location_name) || '';
+      fReturn.textContent = ret || '—';
+      fReturnPickupLoc.textContent = (fechasData && fechasData.return_pickup_location_name) || '—';
+      fReturnDropoffLoc.textContent = (fechasData && fechasData.return_dropoff_location_name) || '—';
+      fPeople.textContent = (fechasData && fechasData.people) || '';
+      fTripType.textContent = (fechasData && (fechasData.trip_type || '').toUpperCase()) || '';
+      fCarType.textContent = (fechasData && (fechasData.car_type_label || fechasData.car_type_value)) || '';
+    } catch (e) {}
+  }
+
+  const items = ensureArray(selectedTransfers, selectedTransfer);
+  renderCartRows(items);
+  recalcTotals(items);
+})();
+</script>

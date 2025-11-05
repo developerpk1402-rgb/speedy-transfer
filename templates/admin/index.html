@@ -1,0 +1,26 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+  {{ block.super }}
+
+  <div class="app-reports module" style="margin-top:18px;">
+    <h2 style="margin-bottom:8px;">Reports</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+      <a href="{% url 'admin:admin_reports_portal' %}" style="display:block;padding:10px;border-radius:6px;border:1px solid #e6e6e6;background:#fff;text-decoration:none;color:inherit;">
+        <strong>Reporting Portal</strong>
+        <div style="font-size:0.9rem;color:#666;">Open the reports dashboard</div>
+      </a>
+
+      <a href="{% url 'admin:admin_reports_sold_orders' %}" style="display:block;padding:10px;border-radius:6px;border:1px solid #e6e6e6;background:#fff;text-decoration:none;color:inherit;">
+        <strong>Sold Orders</strong>
+        <div style="font-size:0.9rem;color:#666;">List and export bookings</div>
+      </a>
+
+      <a href="{% url 'admin:admin_reports_sales_history' %}" style="display:block;padding:10px;border-radius:6px;border:1px solid #e6e6e6;background:#fff;text-decoration:none;color:inherit;">
+        <strong>Sales History</strong>
+        <div style="font-size:0.9rem;color:#666;">Daily sales aggregation and charts</div>
+      </a>
+    </div>
+  </div>
+
+{% endblock %}

@@ -1,0 +1,76 @@
+<div id="sold-orders-v3">
+  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;">
+    <h1 style="margin:0;font-size:1.5rem;">Sold Orders</h1>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <form method="get" style="display:flex;gap:8px;align-items:center;">
+        <label class="muted">From: <input type="date" name="start_date" value="{{ start_date }}" /></label>
+        <label class="muted">To: <input type="date" name="end_date" value="{{ end_date }}" /></label>
+        <button class="">Filter</button>
+      </form>
+      <div>
+        <a href="?format=csv{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}">Export CSV</a>
+        &nbsp;•&nbsp;
+        <a href="?format=xlsx{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}">Export XLSX</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <!-- desktop table -->
+    <div class="desktop-table" style="display:none;">
+      <table style="width:100%;border-collapse:collapse;">
+        <thead style="background:#f3f4f6;text-align:left;">
+          <tr>
+            <th style="padding:8px">ID</th><th style="padding:8px">Client</th><th style="padding:8px">Name</th><th style="padding:8px">Phone</th><th style="padding:8px">Pickup</th><th style="padding:8px">Dropoff</th><th style="padding:8px">Pickup Date</th><th style="padding:8px">Amount</th><th style="padding:8px">Method</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in bookings %}
+          <tr style="border-top:1px solid #eef2f7;">
+            <td style="padding:8px">{{ b.id }}</td>
+            <td style="padding:8px">{{ b.client_id }}</td>
+            <td style="padding:8px">{{ b.customer_name }}</td>
+            <td style="padding:8px">{{ b.customer_phone }}</td>
+            <td style="padding:8px">{{ b.pickup_location1.name }}</td>
+            <td style="padding:8px">{{ b.dropoff_location1.name }}</td>
+            <td style="padding:8px">{{ b.pickup_date_time }}</td>
+            <td style="padding:8px">{{ b.total_amount }} {{ b.currency }}</td>
+            <td style="padding:8px">{{ b.payment_method }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="9" style="padding:12px">No bookings found</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- mobile list -->
+    <div class="mobile-list">
+      {% for b in bookings %}
+        <div style="padding:10px;border-bottom:1px solid #eef2f7;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-weight:600">{{ b.customer_name }}</div>
+            <div class="muted" style="font-size:0.9rem">ID {{ b.id }}</div>
+          </div>
+          <div class="muted" style="font-size:0.9rem">{{ b.pickup_date_time }} — {{ b.payment_method }}</div>
+          <div style="margin-top:6px;color:var(--report-muted);">{{ b.pickup_location1.name }} → {{ b.dropoff_location1.name }}</div>
+        </div>
+      {% empty %}
+        <div style="padding:12px">No bookings found</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
+    <div class="muted">Showing {{ bookings.start_index }}–{{ bookings.end_index }} of {{ bookings.paginator.count }}</div>
+    <div>
+      {% if bookings.has_previous %}
+        <a href="?page={{ bookings.previous_page_number }}" class="muted">Previous</a>
+      {% endif %}
+      &nbsp;
+      {% if bookings.has_next %}
+        <a href="?page={{ bookings.next_page_number }}" class="muted">Next</a>
+      {% endif %}
+    </div>
+  </div>
+</div>

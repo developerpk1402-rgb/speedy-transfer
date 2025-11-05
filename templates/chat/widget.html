@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Support</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        .messages-container {
+            height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <div class="flex flex-col h-screen">
+        <!-- Chat Header -->
+        <div class="bg-indigo-600 text-white p-4 flex justify-between items-center">
+            <h1 class="text-lg font-semibold">Chat de Soporte</h1>
+            <div id="connectionStatus" class="text-sm px-2 py-1 rounded bg-indigo-500">
+                Conectando...
+            </div>
+        </div>
+
+        <!-- Messages Container -->
+        <div id="messages" class="messages-container p-4 space-y-3 bg-gray-50">
+            <div class="text-center text-gray-500 text-sm py-2">
+                Bienvenido al chat de soporte
+            </div>
+        </div>
+
+        <!-- Message Input -->
+        <div class="border-t bg-white p-4">
+            <form id="chatForm" class="flex space-x-2">
+                <input type="text" 
+                       id="messageInput" 
+                       class="flex-1 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                       placeholder="Escribe tu mensaje..."
+                       required>
+                <button type="submit"
+                        class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    Enviar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let chatSocket = null;
+            const messages = document.getElementById('messages');
+            const chatForm = document.getElementById('chatForm');
+            const messageInput = document.getElementById('messageInput');
+            const connectionStatus = document.getElementById('connectionStatus');
+
+            function updateConnectionStatus(status, isError = false) {
+                connectionStatus.textContent = status;
+                connectionStatus.className = `text-sm px-2 py-1 rounded ${
+                    isError ? 'bg-red-500' : 'bg-green-500'
+                }`;
+            }
+
+            console.log('Initializing chat widget...');
+            // Create a new chat room when the page loads
+            fetch('/chat/api/rooms/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    customer_name: 'Website Visitor',
+                    customer_email: 'visitor@example.com',
+                    status: 'open'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Chat room created:', data);
+                connectWebSocket(data.id);
+            })
+            .catch(error => {
+                console.error('Error creating chat room:', error);
+                updateConnectionStatus('Error de conexión', true);
+                appendMessage('Sistema', 'Error al conectar al servicio de chat.');
+            });
+
+            function connectWebSocket(roomId) {
+                // Get the current hostname and port
+                const hostname = window.location.hostname;
+                const wsPort = '8001'; // Daphne WebSocket server port
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                
+                // Construct WebSocket URL
+                const wsUrl = `${protocol}//${hostname}:${wsPort}/ws/chat/${roomId}/`;
+                console.log('WebSocket URL:', wsUrl);
+                
+                // Add error event listener to window
+                window.addEventListener('error', function(e) {
+                    console.error('Global error:', e.message);
+                    updateConnectionStatus('Error de conexión', true);
+                });
+                
+                console.log('Attempting to connect to WebSocket:', wsUrl);
+                updateConnectionStatus('Conectando...', false);
+                
+                try {
+                    if (chatSocket && chatSocket.readyState !== WebSocket.CLOSED) {
+                        console.log('Closing existing connection...');
+                        chatSocket.close();
+                    }
+                    
+                    console.log('Creating new WebSocket connection...');
+                    chatSocket = new WebSocket(wsUrl);
+                    console.log('WebSocket object created successfully');
+
+                    chatSocket.onopen = function() {
+                        console.log('WebSocket connection established');
+                        updateConnectionStatus('Conectado');
+                        appendMessage('Sistema', 'Conectado al servicio de chat. ¿En qué podemos ayudarte?');
+                    };
+
+                    // Add detailed error logging
+                    window.onerror = function(msg, url, line) {
+                        console.error('Window Error:', msg, 'at', url, ':', line);
+                    };
+
+                    chatSocket.onmessage = function(e) {
+                        console.log('Message received:', e.data);
+                        const data = JSON.parse(e.data);
+                        appendMessage(data.sender_type, data.message);
+                    };
+
+                    chatSocket.onclose = function(e) {
+                        console.log('WebSocket connection closed:', e);
+                        updateConnectionStatus('Reconectando...', true);
+                        setTimeout(() => connectWebSocket(roomId), 3000);
+                    };
+
+                    chatSocket.onerror = function(e) {
+                        console.error('WebSocket error:', e);
+                        updateConnectionStatus('Error de conexión', true);
+                    };
+                } catch (error) {
+                    console.error('Error creating WebSocket:', error);
+                    updateConnectionStatus('Error de conexión', true);
+                }
+            }
+
+            chatForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const message = messageInput.value.trim();
+                
+                if (message && chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+                    chatSocket.send(JSON.stringify({
+                        'message': message,
+                        'sender_type': 'customer'
+                    }));
+                    messageInput.value = '';
+                } else {
+                    appendMessage('Sistema', 'No se pudo enviar el mensaje. Verifica tu conexión.');
+                }
+            });
+
+            function appendMessage(sender, content) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `group flex ${sender === 'customer' ? 'justify-end' : 'justify-start'}`;
+                
+                const bubble = document.createElement('div');
+                bubble.className = `max-w-[85%] px-4 py-2 rounded-lg ${
+                    sender === 'customer' 
+                        ? 'bg-indigo-600 text-white rounded-br-none' 
+                        : sender === 'Sistema'
+                            ? 'bg-gray-200 text-gray-700'
+                            : 'bg-gray-100 text-gray-900 rounded-bl-none'
+                }`;
+                bubble.textContent = content;
+                
+                messageDiv.appendChild(bubble);
+                messages.appendChild(messageDiv);
+                messages.scrollTop = messages.scrollHeight;
+            }
+
+            // Helper function to get CSRF token
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+        });
+    </script>
+</body>
+</html>

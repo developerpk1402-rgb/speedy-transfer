@@ -1,0 +1,51 @@
+<div id="sales-history-v3">
+  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;">
+    <h1 style="margin:0;font-size:1.5rem;">Sales History</h1>
+    <form method="get" style="display:flex;gap:8px;align-items:center;">
+      <label class="muted">From: <input type="date" name="start_date" value="{{ start_date }}" /></label>
+      <label class="muted">To: <input type="date" name="end_date" value="{{ end_date }}" /></label>
+      <button class="">Filter</button>
+    </form>
+  </div>
+
+  <div class="grid grid-md-3" style="margin-bottom:12px;">
+    <div class="card"><div class="muted">Total Sales</div><div style="font-size:1.25rem;font-weight:700">{{ total_sales|default:0 }}</div></div>
+    <div class="card"><div class="muted">Orders</div><div style="font-size:1.25rem;font-weight:700">{{ total_orders|default:0 }}</div></div>
+    <div class="card"><div class="muted">Avg Order</div><div style="font-size:1.25rem;font-weight:700">{{ avg_order|default:0 }}</div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:12px;">
+    <div style="width:100%;height:320px;">
+      <canvas id="salesChartV3" style="width:100%;height:100%;"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <table style="width:100%;border-collapse:collapse;">
+      <thead style="background:#f3f4f6;text-align:left;"><tr><th style="padding:8px">Date</th><th style="padding:8px">Total Sales</th><th style="padding:8px">Orders</th></tr></thead>
+      <tbody>
+        {% for row in data %}
+          <tr style="border-top:1px solid #eef2f7;"><td style="padding:8px">{{ row.date_only }}</td><td style="padding:8px">{{ row.total_sales|default:0 }}</td><td style="padding:8px">{{ row.orders }}</td></tr>
+        {% empty %}
+          <tr><td colspan="3" style="padding:12px">No sales data</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    (function(){
+      try{
+        const ctx = document.getElementById('salesChartV3').getContext('2d');
+        const labels = {{ chart_labels_json|safe }};
+        const values = {{ chart_values_json|safe }};
+        const data = { labels: labels, datasets:[{ label:'Daily Sales', data: values, backgroundColor:'rgba(59,130,246,0.08)', borderColor:'rgba(59,130,246,0.8)', tension:0.3 }] };
+        const cfg = { type:'line', data: data, options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true } } } };
+        const chart = new Chart(ctx, cfg);
+        window.addEventListener('resize', ()=>chart.resize());
+      }catch(e){ console.warn('chart load failed', e); }
+    })();
+  </script>
+
+</div>

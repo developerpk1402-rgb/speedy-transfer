@@ -1,0 +1,250 @@
+{% load static %}
+<section id="fechas" class="grid items-center gap-8 py-16 bg-[#FBFBFB] shadow-xl">
+  <form action="{% url 'core:results_view' %}" method="get" class="w-full">
+    <div class="flex flex-col sm:flex-row flex-1 justify-center gap-10">
+      
+      <!-- Pickup Date/Time -->
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">PICK UP DATE AND TIME</legend>
+        <input type="datetime-local" name="pickup_datetime" class="input" value="{{ request.GET.pickup_datetime }}" required />
+      </fieldset>
+      
+      <!-- Pickup Location -->
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">PICK UP LOCATION</legend>
+        <select name="pickup_location" class="select" required>
+          <option value="" disabled {% if not request.GET.pickup_location %}selected{% endif %}>Pickup Location</option>
+          {% for zone in zones_with_hotels %}
+            <optgroup label="{{ zone.name }}">
+              {% for hotel in zone.hotels.all %}
+                <option value="{{ hotel.id }}" {% if request.GET.pickup_location|add:0 == hotel.id %}selected{% endif %}>
+                  {{ hotel.name }}
+                </option>
+              {% endfor %}
+             </optgroup>
+          {% endfor %}
+          {% if hotels_without_zone %}
+            <optgroup label="Other Locations">
+              {% for hotel in hotels_without_zone %}
+                <option value="{{ hotel.id }}" {% if request.GET.pickup_location|add:0 == hotel.id %}selected{% endif %}>
+                  {{ hotel.name }}
+                </option>
+              {% endfor %}
+            </optgroup>
+          {% endif %}
+        </select>
+      </fieldset>
+      
+      <!-- Dropoff Location -->
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">DROP OFF LOCATION</legend>
+        <select name="dropoff_location" class="select" required>
+          <option value="" disabled {% if not request.GET.dropoff_location %}selected{% endif %}>Dropoff Location</option>
+          {% for zone in zones_with_hotels %}
+            <optgroup label="{{ zone.name }}">
+              {% for hotel in zone.hotels.all %}
+                <option value="{{ hotel.id }}" {% if request.GET.dropoff_location|add:0 == hotel.id %}selected{% endif %}>
+                  {{ hotel.name }}
+                </option>
+              {% endfor %}
+            </optgroup>
+          {% endfor %}
+          {% if hotels_without_zone %}
+            <optgroup label="Other Locations">
+              {% for hotel in hotels_without_zone %}
+                <option value="{{ hotel.id }}" {% if request.GET.dropoff_location|add:0 == hotel.id %}selected{% endif %}>
+                  {{ hotel.name }}
+                </option>
+              {% endfor %}
+            </optgroup>
+          {% endif %}
+        </select>
+      </fieldset>
+    </div>
+
+    <!-- Return Section -->
+    <div id="return-divider" class="divider ml-6 mr-6">RETURN</div>
+    <div id="return-section" class="flex flex-col sm:flex-row flex-1 justify-center gap-10">
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">RETURN DATE AND TIME</legend>
+        <input type="datetime-local" name="return_datetime" class="input" value="{{ request.GET.return_datetime }}" />
+      </fieldset>
+
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">PICK UP LOCATION</legend>
+        <select name="return_pickup_location" class="select w-full xl:w-[220px] sm:text-center bg-[#FBFBFB] rounded-[4px] py-2 px-4">
+          <option value="" disabled {% if not request.GET.return_pickup_location %}selected{% endif %}>Pickup Location</option>
+          {% for zone in zones_with_hotels %}
+            <optgroup label="{{ zone.name }}">
+              {% for hotel in zone.hotels.all %}
+                <option value="{{ hotel.id }}" {% if request.GET.return_pickup_location|add:0 == hotel.id %}selected{% endif %}>
+                  {{ hotel.name }}
+                </option>
+              {% endfor %}
+             </optgroup>
+          {% endfor %}
+          {% if hotels_without_zone %}
+            <optgroup label="Other Locations">
+              {% for hotel in hotels_without_zone %}
+                <option value="{{ hotel.id }}" {% if request.GET.return_pickup_location|add:0 == hotel.id %}selected{% endif %}>
+                  {{ hotel.name }}
+                </option>
+              {% endfor %}
+            </optgroup>
+          {% endif %}
+        </select>
+      </fieldset>
+      
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">DROP OFF LOCATION</legend>
+        <select name="return_dropoff_location" class="select w-full xl:w-[220px] sm:text-center bg-[#FBFBFB] rounded-[4px] py-2 px-4">
+          <option value="" disabled {% if not request.GET.return_dropoff_location %}selected{% endif %}>Dropoff Location</option>
+          {% for zone in zones_with_hotels %}
+            <optgroup label="{{ zone.name }}">
+              {% for hotel in zone.hotels.all %}
+                <option value="{{ hotel.id }}" {% if request.GET.return_dropoff_location|add:0 == hotel.id %}selected{% endif %}>
+                  {{ hotel.name }}
+                </option>
+              {% endfor %}
+            </optgroup>
+          {% endfor %}
+          {% if hotels_without_zone %}
+            <optgroup label="Other Locations">
+              {% for hotel in hotels_without_zone %}
+                <option value="{{ hotel.id }}" {% if request.GET.return_dropoff_location|add:0 == hotel.id %}selected{% endif %}>
+                  {{ hotel.name }}
+                </option>
+              {% endfor %}
+            </optgroup>
+          {% endif %}
+        </select>
+      </fieldset>
+    </div>
+
+    <!-- Bottom Section -->
+    <div class="flex flex-col sm:flex-row flex-1 justify-center gap-10 mt-4">
+      <!-- People Count -->
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">HOW MANY PEOPLE (INCLUDING CHILDREN)?</legend>
+        <label class="input validator">
+          <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </g>
+          </svg>
+          <input name="people" value="{{ request.GET.people }}" min="1" type="number" required placeholder="How many people?" minlength="1" maxlength="30" title="HOW MANY PEOPLE (INCLUDING CHILDREN)?" />
+        </label>
+      </fieldset>
+
+      <!-- Car Type Dropdown (Updated) -->
+<fieldset class="fieldset">
+  <legend class="fieldset-legend">CAR TYPE</legend>
+  <select name="car_type" class="select" required>
+    <option value="" disabled {% if not request.GET.car_type %}selected{% endif %}>Select Car Type</option>
+    {% for car_type in car_types %}
+      <option value="{{ car_type.0 }}" {% if request.GET.car_type == car_type.0 %}selected{% endif %}>
+        {{ car_type.1 }}
+      </option>
+    {% endfor %}
+  </select>
+</fieldset>
+
+      <!-- Trip Options -->
+      <fieldset class="fieldset p-4">
+        <legend class="fieldset-legend">TRIP OPTIONS</legend>
+        <div class="flex">
+          <div class="flex-1">
+            <label class="label">
+              <input type="radio" name="trip_type" value="roundtrip" class="radio" {% if request.GET.trip_type == 'roundtrip' %}checked{% endif %} /> Roundtrip
+            </label>
+          </div>
+          <div class="flex-1 ml-6">
+            <label class="label">
+              <input type="radio" name="trip_type" value="oneway" class="radio" {% if request.GET.trip_type == 'oneway' or not request.GET.trip_type %}checked{% endif %} /> One way
+            </label>
+          </div>
+        </div>
+        <div id="return-trip-toggle" class="hidden">
+          <label class="label mt-4">
+            <input type="checkbox" name="return_trip" class="checkbox" /> Return trip
+          </label>
+        </div>
+      </fieldset>
+      
+      <button type="submit" class="btn mt-8 w-full xl:w-[270px] bg-[#4abbc1] hover:bg-[#047884] rounded-[4px] border-0 text-white text-[24px] sm:w-64 py-3">
+        Find a Transfer
+      </button>
+    </div>
+  </form>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const radios = document.querySelectorAll('input[name="trip_type"]');
+  const returnSection = document.getElementById('return-section');
+  const returnDivider = document.getElementById('return-divider');
+  const form = document.querySelector('#fechas form');
+
+  const returnDT = document.querySelector('input[name="return_datetime"]');
+  const returnPickup = document.querySelector('select[name="return_pickup_location"]');
+  const returnDropoff = document.querySelector('select[name="return_dropoff_location"]');
+
+  function setReturnRequired(isRequired) {
+    const fields = [returnDT, returnPickup, returnDropoff];
+    fields.forEach(function(el){
+      if (!el) return;
+      if (isRequired) {
+        el.setAttribute('required', 'required');
+        el.setAttribute('aria-required', 'true');
+      } else {
+        el.removeAttribute('required');
+        el.removeAttribute('aria-required');
+      }
+    });
+  }
+
+  function updateReturnSection() {
+    const selected = document.querySelector('input[name="trip_type"]:checked');
+    if (selected?.value === 'oneway') {
+      returnSection.style.display = 'none';
+      returnDivider.style.display = 'none';
+      setReturnRequired(false);
+    } else {
+      returnSection.style.display = 'flex';
+      returnDivider.style.display = 'flex';
+      setReturnRequired(true);
+    }
+  }
+
+  // Initial check
+  updateReturnSection();
+
+  // Event listener
+  radios.forEach(function(radio){
+    radio.addEventListener('change', updateReturnSection);
+  });
+
+  // Form level guard
+  if (form) {
+    form.addEventListener('submit', function(e){
+      const selected = document.querySelector('input[name="trip_type"]:checked');
+      if (selected && selected.value === 'roundtrip') {
+        if (!returnDT.value || !returnPickup.value || !returnDropoff.value) {
+          e.preventDefault();
+          e.stopPropagation();
+          alert('Please complete the Return date/time, pickup and dropoff for a roundtrip.');
+          return false;
+        }
+      }
+      return true;
+    });
+  }
+});
+</script>
+
+<style>
+  #return-section {
+    transition: all 0.3s ease;
+  }
+</style>

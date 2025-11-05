@@ -1,0 +1,22 @@
+{% extends 'admin/base_site.html' %}
+{% load static %}
+{% block content %}
+  <div class="module" style="max-width:1100px;margin:0 auto;">
+    <header style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+      <h1 style="margin:0;padding:8px 0;">Reporting Portal</h1>
+      <p style="margin:0;color:#666;">Quick access to site reports. Click a card below to open a report (admin access required).</p>
+    </header>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:18px;">
+      <a href="{% url 'admin:admin_reports_sold_orders' %}" class="card" style="display:block;padding:16px;border:1px solid #eee;border-radius:6px;background:#fff;text-decoration:none;color:inherit;box-shadow:0 1px 2px rgba(0,0,0,0.04);">
+        <h3 style="margin:0 0 8px 0">Sold Orders</h3>
+        <p style="margin:0;color:#444;font-size:0.95rem;">List of bookings, with CSV/XLSX export and filters.</p>
+      </a>
+
+      <a href="{% url 'admin:admin_reports_sales_history' %}" class="card" style="display:block;padding:16px;border:1px solid #eee;border-radius:6px;background:#fff;text-decoration:none;color:inherit;box-shadow:0 1px 2px rgba(0,0,0,0.04);">
+        <h3 style="margin:0 0 8px 0">Sales History</h3>
+        <p style="margin:0;color:#444;font-size:0.95rem;">Daily sales summary + chart and exports.</p>
+      </a>
+    </div>
+  </div>
+{% endblock %}

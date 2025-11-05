@@ -1,0 +1,74 @@
+{% load static %}
+<footer class="footer sm:footer-horizontal bg-base-200 text-base-content p-10">
+  <nav>
+    <div class="max-w-[20rem]">
+      <a href="{% url 'core:home_view' %}"><img src="{% static 'images/Copia-de-logos-Mesa-de-trabajo-1-01.png' %}" alt="Logo de Speedy Transfers" /></a>
+    </div>
+    <p class="text-justify max-w-[20rem] w-full">At Speedy Transfers, we are committed to providing safe, reliable, and comfortable transportation in Puerto Vallarta. With professional drivers and top-quality vehicles, we ensure a seamless travel experience from the moment you arrive. Book with us and travel stress-free!</p>
+  </nav>
+  <nav>
+    <h6 class="footer-title">Contact</h6>
+
+    <!-- Contenedor para el teléfono -->
+    <div class="flex space-x-2 mb-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none">
+        <path d="M3.24375 5.67949L5.73984 3.18574C5.91592 3.00889 6.1252 2.86857 6.35567 2.77284C6.58614 2.67712 6.83325 2.62787 7.08281 2.62793C7.5914 2.62793 8.06953 2.82715 8.42812 3.18574L11.1141 5.87168C11.2909 6.04776 11.4312 6.25704 11.527 6.48751C11.6227 6.71798 11.6719 6.96509 11.6719 7.21465C11.6719 7.72324 11.4727 8.20137 11.1141 8.55996L9.15 10.524C9.60974 11.5374 10.2489 12.4592 11.0367 13.2451C11.8225 14.0348 12.7443 14.6763 13.7578 15.1389L15.7219 13.1748C15.898 12.998 16.1072 12.8576 16.3377 12.7619C16.5682 12.6662 16.8153 12.6169 17.0648 12.617C17.5734 12.617 18.0516 12.8162 18.4102 13.1748L21.0984 15.8584C21.2755 16.0348 21.4159 16.2445 21.5117 16.4754C21.6074 16.7062 21.6565 16.9538 21.6562 17.2037C21.6562 17.7123 21.457 18.1904 21.0984 18.549L18.607 21.0404C18.0352 21.6146 17.2453 21.9404 16.4344 21.9404C16.2633 21.9404 16.0992 21.9264 15.9375 21.8982C12.7781 21.3779 9.64453 19.6975 7.11562 17.1709C4.58906 14.6467 2.91094 11.5154 2.38359 8.34668C2.22422 7.37871 2.54531 6.38262 3.24375 5.67949Z" fill="#0E0F1D" />
+      </svg>
+      <a class="link link-hover" href="tel:3221506959">(322) 150-6959</a>
+    </div>
+
+    <!-- Contenedor para el correo -->
+    <div class="flex space-x-2 mb-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none">
+        <path d="M4.644 5.08423H20.544C22.044 5.08423 22.8 5.79223 22.8 7.23223V17.3362C22.8 18.7642 22.044 19.4842 20.544 19.4842H4.644C3.144 19.4842 2.388 18.7642 2.388 17.3362V7.23223C2.388 5.79223 3.144 5.08423 4.644 5.08423ZM12.588 15.4042L20.676 8.76823C20.964 8.52823 21.192 7.97623 20.832 7.48423C20.484 6.99223 19.848 6.98023 19.428 7.28023L12.588 11.9122L5.76 7.28023C5.34 6.98023 4.704 6.99223 4.356 7.48423C3.996 7.97623 4.224 8.52823 4.512 8.76823L12.588 15.4042Z" fill="#0E0F1D" />
+      </svg>
+      <a class="link link-hover" href="mailto:info@speedytransfers.mx">info@speedytransfers.mx</a>
+    </div>
+
+    <!-- Contenedor para la ubicación -->
+    <div class="flex space-x-2 mb-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="20" viewBox="0 0 14 20" fill="none">
+        <g clip-path="url(#clip0_0_386)">
+          <path d="M6.13594 18.8092C4.23281 16.4268 0 10.6525 0 7.40918C0 3.4741 3.13396 0.28418 7 0.28418C10.8646 0.28418 14 3.4741 14 7.40918C14 10.6525 9.73438 16.4268 7.86406 18.8092C7.41562 19.377 6.58437 19.377 6.13594 18.8092ZM7 9.78418C8.28698 9.78418 9.33333 8.71914 9.33333 7.40918C9.33333 6.09922 8.28698 5.03418 7 5.03418C5.71302 5.03418 4.66667 6.09922 4.66667 7.40918C4.66667 8.71914 5.71302 9.78418 7 9.78418Z" fill="#0E0F1D" />
+        </g>
+        <defs>
+          <clipPath id="clip0_0_386">
+            <rect width="14" height="19" fill="white" transform="translate(0 0.28418)" />
+          </clipPath>
+        </defs>
+      </svg>
+      <a class="">Location: Puerto Vallarta, Jalisco</a>
+    </div>
+  </nav>
+  <nav>
+    <h6 class="footer-title">Maps location</h6>
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d43477.276231602016!2d-105.23361937667423!3d20.64983781448394!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x842145635063c87f%3A0x79cfbf9985bf5274!2sPuerto%20Vallarta%2C%20Jalisco!5e0!3m2!1sen!2smx!4v1741734979216!5m2!1sen!2smx" width="auto" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+  </nav>
+</footer>
+<footer class="footer bg-black text-base-content border-base-300 border-t px-10 py-4">
+  <aside class="grid-flow-col items-center">
+    <!-- LOGO DE SPEEDY TRANSFERS -->
+    <p class="text-white">
+      ©{% now 'Y' %} All Copytights belong to Speedy Transfers
+    </p>
+  </aside>
+  <nav class="md:place-self-center md:justify-self-end">
+    <div class="grid grid-flow-col gap-4">
+      <a>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-white">
+          <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"></path>
+        </svg>
+      </a>
+      <a>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-white">
+          <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"></path>
+        </svg>
+      </a>
+      <a>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-white">
+          <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"></path>
+        </svg>
+      </a>
+    </div>
+  </nav>
+</footer>

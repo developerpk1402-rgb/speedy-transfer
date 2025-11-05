@@ -1,0 +1,130 @@
+{% load static %}
+
+<section id="destinos" class="my-16">
+  <!-- Título de la sección -->
+  <div class="text-left w-full relative pl-5">
+    <!-- Texto de fondo (Destinations) -->
+    <span class="absolute inset-0 text-[60px] md:text-[96px] text-[#E5E5E5] font-bold flex items-center justify-self-start bottom-[3rem] left-5 opacity-50 z-0">Destinations</span>
+    <!-- Texto principal (Available Destinations) -->
+    <p class="text-2xl md:text-5xl font-bold relative z-10 text-gray-800">Available Destinations</p>
+  </div>
+
+  <!-- Contenedor de los botones -->
+  <div class="flex justify-end">
+    <div class="flex space-x-4 justify-center items-center">
+      <!-- Botón 1 -->
+      <label class="btn-square w-[9rem] sm:w-[7rem] text-xs md:text-sm lg:text-base bg-gray-200 rounded-lg transition-colors duration-300 ease-in-out inline-flex items-center justify-center">
+        <input type="radio" name="options" class="hidden peer" id="vallarta" />
+        <span class="w-full h-full flex items-center justify-center rounded-lg">Vallarta</span>
+      </label>
+
+      <!-- Botón 4 -->
+      <label class="btn-square w-[9rem] sm:w-[9rem] text-xs md:text-sm lg:text-base bg-gray-200 rounded-lg transition-colors duration-300 ease-in-out inline-flex items-center justify-center">
+        <input type="radio" name="options" class="hidden peer" id="vallarta" aria-label="Bahia de Banderas" />
+        <span class="w-full h-full flex items-center justify-center rounded-lg">Bahia de Banderas</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Contenedores de contenido (estos divs se ocultarán o mostrarán) -->
+  <div>
+    <!-- Contenido 1 (Vallarta) -->
+    <div id="content-vallarta" class="tabpage justify-center my-10 relative">
+      <div class="container w-[100%] p-4">
+        <div class="swiper mySwiper1 w-full h-full">
+          <div class="swiper-wrapper">
+            <!-- Slides del swiper -->
+            <div class="swiper-slide relative my-5">
+              <div class="card bg-base-100 border w-auto">
+                <img src="{% static 'images/destinos1.png' %}" class="w-full object-cover rounded-t-lg" />
+                <div class="card-body">
+                  <h2 class="card-title">Hotel Zone</h2>
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide relative my-5">
+              <div class="card bg-base-100 border w-auto">
+                <img src="{% static 'images/destinos2.png' %}" class="w-full object-cover rounded-t-lg" />
+                <div class="card-body">
+                  <h2 class="card-title">Mismaloya</h2>
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide relative my-5">
+              <div class="card bg-base-100 border w-auto">
+                <img src="{% static 'images/destinos3.png' %}" class="w-full object-cover rounded-t-lg" />
+                <div class="card-body">
+                  <h2 class="card-title">Marina Vallarta</h2>
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide relative my-5">
+              <div class="card bg-base-100 border w-auto">
+                <img src="{% static 'images/destinos4.png' %}" class="w-full object-cover rounded-t-lg" />
+                <div class="card-body">
+                  <h2 class="card-title">Down Town, Amapas & Conchas Chinas</h2>
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide relative my-5">
+              <div class="card bg-base-100 border w-auto">
+                <img src="{% static 'images/destinos3.png' %}" class="w-full object-cover rounded-t-lg" />
+                <div class="card-body">
+                  <h2 class="card-title">Marina Vallarta</h2>
+                  <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="16" viewBox="0 0 13 16" fill="none">
+                      <path d="M6.31177 0.0222778C4.68234 0.0242001 3.12019 0.672344 1.968 1.82453C0.81581 2.97672 0.167666 4.53887 0.165744 6.16831C0.163792 7.49989 0.598749 8.79534 1.40389 9.85593C1.40389 9.85593 1.57151 10.0766 1.59889 10.1085L6.31177 15.6667L11.0269 10.1057C11.0515 10.0761 11.2197 9.85593 11.2197 9.85593L11.2202 9.85425C12.025 8.79413 12.4597 7.49928 12.4578 6.16831C12.4559 4.53887 11.8077 2.97672 10.6556 1.82453C9.50336 0.672344 7.94121 0.0242001 6.31177 0.0222778ZM6.31177 8.40323C5.86975 8.40323 5.43765 8.27215 5.07012 8.02658C4.70259 7.781 4.41613 7.43196 4.24698 7.02358C4.07782 6.6152 4.03356 6.16583 4.1198 5.7323C4.20603 5.29877 4.41889 4.90054 4.73145 4.58798C5.04401 4.27542 5.44223 4.06257 5.87576 3.97633C6.3093 3.8901 6.75866 3.93436 7.16704 4.10351C7.57542 4.27267 7.92447 4.55912 8.17004 4.92665C8.41562 5.29419 8.5467 5.72628 8.5467 6.16831C8.54596 6.76082 8.31025 7.32885 7.89129 7.74782C7.47232 8.16679 6.90429 8.40249 6.31177 8.40323Z" fill="#F5D112" />
+                    </svg>
+                    {#<p class="ml-2">Jalisco</p>#}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Más slides aquí... -->
+          </div>
+        </div>
+
+        <!-- Botones de navegación del swiper -->
+        <!-- Botón "next" -->
+        <svg class="swiper-button-next1 absolute top-1/2 transform -translate-y-1/2 right-10 z-10 w-20 h-20 transition-transform duration-200 ease-out group-hover:scale-105 active:scale-95" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 86 86" fill="none">
+          <g filter="url(#filter0_d_0_320)">
+            <circle class="transition-colors duration-300 group-hover:fill-[#047884]" cx="42.5215" cy="39.0648" r="31.5" fill="#4abbc1" />
+          </g>
+          <path class="stroke-white" d="M42.4811 55.8356C49.7052 51.4702 56.9136 46.5329 64.6813 43.1151C65.9272 42.5669 67.5329 42.0232 68.5704 41.0895C70.0167 39.7879 59.3612 32.9714 57.9564 31.934C56.7447 31.0392 42.4811 18.4495 42.4811 22.2923C42.4811 24.4629 42.6235 33.9595 40.2935 33.9595C32.7236 33.9595 25.2673 33.2303 17.6882 33.2303C15.3577 33.2303 15.5005 41.1322 15.5005 43.4392C15.5005 45.279 14.8486 47.0852 17.121 47.0852C22.1174 47.0852 27.1138 47.0852 32.1102 47.0852C32.873 47.0852 43.4891 46.1103 43.6154 47.2473C43.8443 49.3077 41.9065 54.7972 41.0227 56.5648" stroke="white" stroke-width="5" stroke-linecap="round" />
+          <defs>
+            <filter id="filter0_d_0_320" x="0.0214844" y="0.564819" width="85" height="85" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+              <feFlood flood-opacity="0" result="BackgroundImageFix" />
+              <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+              <feOffset dy="4" />
+              <feGaussianBlur stdDeviation="5.5" />
+              <feComposite in2="hardAlpha" operator="out" />
+              <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
+              <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_320" />
+              <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_320" result="shape" />
+            </filter>
+          </defs>
+        </svg>
+
+        <!-- Botón "prev" -->
+        <svg class="swiper-button-prev1 absolute top-1/2 transform -translate-y-1/2 left-10 z-10 w-20 h-20 transition-transform duration-200 ease-out group-hover:scale-105 active:scale-95" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 86 86" fill="none">
+          <g filter="url(#filter0_d_0_293)">
+            <circle class="transition-colors duration-300 group-hover:fill-[#047884]" cx="31.5" cy="31.5" r="31.5" transform="matrix(-1 0 0 1 74.0214 7.56482)" fill="#4abbc1" />
+          </g>
+          <path class="stroke-white" d="M42.2369 24.3107C34.8477 28.7759 27.4745 33.8261 19.5293 37.322C18.2549 37.8828 16.6125 38.4388 15.5513 39.3939C14.0719 40.7253 24.971 47.6976 26.4079 48.7587C27.6473 49.674 42.2369 62.5514 42.2369 58.6208C42.2369 56.4006 42.0913 46.6868 44.4745 46.6868C52.2175 46.6868 59.8442 47.4327 67.5965 47.4327C69.9803 47.4327 69.8342 39.3502 69.8342 36.9905C69.8342 35.1087 70.501 33.2612 68.1767 33.2612C63.0661 33.2612 57.9555 33.2612 52.8449 33.2612C52.0646 33.2612 41.2059 34.2584 41.0767 33.0954C40.8425 30.9879 42.8247 25.3729 43.7287 23.5649" stroke="white" stroke-width="5" stroke-linecap="round" />
+          <defs>
+            <filter id="filter0_d_0_293" x="0.0214233" y="0.564819" width="85" height="85" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+              <feFlood flood-opacity="0" result="BackgroundImageFix" />
+              <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+              <feOffset dy="4" />
+              <feGaussianBlur stdDeviation="5.5" />
+              <feComposite in2="hardAlpha" operator="out" />
+              <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
+              <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_293" />
+              <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_293" result="shape" />
+            </filter>
+          </defs>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>

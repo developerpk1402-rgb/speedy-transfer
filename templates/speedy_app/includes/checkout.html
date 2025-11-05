@@ -1,0 +1,224 @@
+{% load static %}
+ <!-- Checkout -->
+ <section id="checkout-page" class="bg-white py-16">
+    <div class="container mx-auto px-4">
+        <h1 class="text-2xl font-semibold mb-8">Checkout</h1>
+        <div class="flex flex-col md:flex-row gap-4">
+            <!-- Billing Details -->
+            <div class="md:w-2/3 bg-white rounded-lg shadow-md p-4">
+                <h2 class="text-xl font-semibold mb-4">Billing Details</h2>
+                <form id="billing-form">
+                    <div class="mb-4">
+                        <label for="billing-name" class="mb-4">Full Name</label>
+                        <input type="text" id="billing-name" class="w-full px-3 mt-2 py-2 border focus:border-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-primary" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="billing-email" class="mb-4">Email</label>
+                        <input type="email" id="billing-email" class="w-full px-3 mt-2 py-2 border focus:border-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-primary" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="billing-phone" class="mb-4">Phone Number</label>
+                        <input type="tel" id="billing-phone" class="w-full px-3 mt-2 py-2 border focus:border-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-primary" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="billing-address" class="mb-4">Address</label>
+                        <input type="text" id="billing-address" class="w-full px-3 mt-2 py-2 border focus:border-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div class="mb-4 flex gap-4">
+                        <div class="w-1/2">
+                            <label for="billing-city" class="mb-4">City</label>
+                            <input type="text" id="billing-city" class="w-full px-3 mt-2 py-2 border focus:border-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div class="w-1/2">
+                            <label for="billing-zip" class="mb-4">ZIP Code</label>
+                            <input type="text" id="billing-zip" class="w-full px-3 mt-2 py-2 border focus:border-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                    </div>
+                    <div class="mb-4 flex gap-4">
+                        <div class="w-1/2">
+                            <label for="billing-country" class="mb-4">Country</label>
+                            <input type="text" id="billing-country" class="w-full px-3 mt-2 py-2 border focus:border-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-primary" value="Mexico">
+                        </div>
+                        <div class="w-1/2">
+                            <label for="billing-company" class="mb-4">Company (Optional)</label>
+                            <input type="text" id="billing-company" class="w-full px-3 mt-2 py-2 border focus:border-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                    </div>
+                </form>
+
+                <div class="bg-white rounded-lg shadow-md p-4 mt-6">
+                  <h3 class="text-lg font-semibold mb-3">Trip Details</h3>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <p><span class="font-semibold">Pickup:</span> <span id="c-pickup"></span></p>
+                      <p><span class="font-semibold">From:</span> <span id="c-pickup-loc"></span></p>
+                      <p><span class="font-semibold">To:</span> <span id="c-dropoff-loc"></span></p>
+                    </div>
+                    <div>
+                      <p><span class="font-semibold">Return:</span> <span id="c-return"></span></p>
+                      <p><span class="font-semibold">From:</span> <span id="c-return-pickup-loc"></span></p>
+                      <p><span class="font-semibold">To:</span> <span id="c-return-dropoff-loc"></span></p>
+                    </div>
+                    <div>
+                      <p><span class="font-semibold">People:</span> <span id="c-people"></span></p>
+                      <p><span class="font-semibold">Trip Type:</span> <span id="c-trip-type"></span></p>
+                      <p><span class="font-semibold">Car Type:</span> <span id="c-car-type"></span></p>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <!-- Order Summary / Payments -->
+            <div class="md:w-1/3 bg-white rounded-lg shadow-md p-4">
+                <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
+                <div id="c-vehicles" class="space-y-3 mb-4"></div>
+                <div class="flex justify-between mb-2 text-sm text-gray-600">
+                  <p>Capacity selected</p>
+                  <p id="c-capacity">0/0</p>
+                </div>
+                <div class="flex justify-between mb-4">
+                    <p>Subtotal</p>
+                    <p id="c-subtotal">$0.00</p>
+                </div>
+                <div class="flex justify-between mb-2">
+                    <p class="font-semibold">Total</p>
+                    <p class="font-semibold" id="c-total">$0.00</p>
+                </div>
+
+                <form id="paypal-form" action="{% url 'core:create_payment' %}" method="POST" class="mt-4">
+                 {% csrf_token %}
+                 <input type="hidden" name="order_json" id="paypal-order-json" />
+                 <button type="submit" class="bg-[#4abbc1] hover:bg-[#047884] text-white border-0 py-2 px-4 rounded-full w-full">Pay with PayPal (Test)</button>
+                </form>
+
+                <form id="stripe-form" action="{% url 'core:create_checkout_session' %}" method="get" class="mt-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="order_json" id="stripe-order-json" />
+                    <button type="submit" class="bg-[#4abbc1] hover:bg-[#047884] text-white border-0 py-2 px-4 rounded-full w-full">Pay with Card (Stripe Test)</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+(function(){
+  function fmtMoney(amount, currency) {
+    const num = isNaN(amount) ? 0 : Number(amount);
+    return new Intl.NumberFormat(undefined, { style: 'currency', currency: currency || 'USD', minimumFractionDigits: 2 }).format(num);
+  }
+  function el(id){ return document.getElementById(id); }
+  function val(id){ const n = el(id); return n ? (n.value || '').trim() : ''; }
+
+  // Load data
+  let selectedTransfers = [];
+  let fechasData = null;
+  try { selectedTransfers = JSON.parse(sessionStorage.getItem('selectedTransfers') || '[]'); } catch(e){}
+  try { fechasData = JSON.parse(sessionStorage.getItem('fechasData') || 'null'); } catch(e){}
+
+  // Populate trip details
+  if (fechasData) {
+    const pickup = fechasData.pickup_datetime ? fechasData.pickup_datetime.replace('T', ' ') : '';
+    const ret = fechasData.return_datetime ? fechasData.return_datetime.replace('T', ' ') : '';
+    el('c-pickup').textContent = pickup;
+    el('c-pickup-loc').textContent = fechasData.pickup_location_name || '';
+    el('c-dropoff-loc').textContent = fechasData.dropoff_location_name || '';
+    el('c-return').textContent = ret || '—';
+    el('c-return-pickup-loc').textContent = fechasData.return_pickup_location_name || '—';
+    el('c-return-dropoff-loc').textContent = fechasData.return_dropoff_location_name || '—';
+    el('c-people').textContent = fechasData.people || '';
+    el('c-trip-type').textContent = (fechasData.trip_type || '').toUpperCase();
+    el('c-car-type').textContent = fechasData.car_type_label || fechasData.car_type_value || '';
+  }
+
+  // Render vehicles
+  const cVehicles = el('c-vehicles');
+  const required = Number((fechasData && fechasData.people) || 0) || 0;
+  let subtotal = 0;
+  let capacity = 0;
+  selectedTransfers.forEach(function(it){
+    const unit = Number(it.price_numeric || 0);
+    subtotal += unit;
+    capacity += Number(it.car_capacity || 0);
+    const item = document.createElement('div');
+    item.className = 'flex items-center justify-between border-b border-gray-line pb-2';
+    item.innerHTML = `
+      <div class="text-sm">
+        <div class="font-semibold">${it.name || 'Vehicle'}</div>
+        <div class="text-gray-600">${it.date || ''} ${it.time || ''}</div>
+      </div>
+      <div class="text-sm font-semibold">${fmtMoney(unit, it.currency || 'USD')}</div>
+    `;
+    cVehicles.appendChild(item);
+  });
+  el('c-capacity').textContent = `${capacity}/${required}`;
+  el('c-subtotal').textContent = fmtMoney(subtotal, 'USD');
+  el('c-total').textContent = fmtMoney(subtotal, 'USD');
+
+  function buildOrder(){
+    const order = {
+      trip_type: (fechasData && fechasData.trip_type) || 'oneway',
+      people: required,
+      pickup: {
+        datetime: (fechasData && fechasData.pickup_datetime) || '',
+        location_id: (fechasData && fechasData.pickup_location_id) || '',
+        location_name: (fechasData && fechasData.pickup_location_name) || ''
+      },
+      dropoff: {
+        location_id: (fechasData && fechasData.dropoff_location_id) || '',
+        location_name: (fechasData && fechasData.dropoff_location_name) || ''
+      },
+      return_trip: (fechasData && fechasData.trip_type) === 'roundtrip' ? {
+        datetime: (fechasData && fechasData.return_datetime) || '',
+        pickup_location_id: (fechasData && fechasData.return_pickup_location_id) || '',
+        pickup_location_name: (fechasData && fechasData.return_pickup_location_name) || '',
+        dropoff_location_id: (fechasData && fechasData.return_dropoff_location_id) || '',
+        dropoff_location_name: (fechasData && fechasData.return_dropoff_location_name) || ''
+      } : null,
+      car_type_value: (fechasData && fechasData.car_type_value) || '',
+      car_type_label: (fechasData && fechasData.car_type_label) || '',
+      items: selectedTransfers.map(function(it){ return {
+        rate_id: it.rate_id,
+        car_id: it.car_id,
+        name: it.name,
+        unit_amount: Number(it.price_numeric || 0),
+        currency: it.currency || 'USD',
+        date: it.date,
+        time: it.time,
+        capacity: Number(it.car_capacity || 0),
+        image_url: it.image_url
+      };}),
+      subtotal: subtotal,
+      total: subtotal,
+      customer: {
+        name: val('billing-name'),
+        email: val('billing-email'),
+        phone: val('billing-phone'),
+        address: val('billing-address'),
+        city: val('billing-city'),
+        zip: val('billing-zip'),
+        country: val('billing-country') || 'Mexico',
+        company: val('billing-company') || ''
+      },
+      currency: 'USD'
+    };
+    return order;
+  }
+
+  function refreshHiddenOrder(){
+    try {
+      const order = buildOrder();
+      el('paypal-order-json').value = JSON.stringify(order);
+      el('stripe-order-json').value = JSON.stringify(order);
+      sessionStorage.setItem('order', JSON.stringify(order));
+    } catch(e) {}
+  }
+
+  // Initialize hidden inputs once
+  refreshHiddenOrder();
+  // Ensure latest data on submit
+  const pf = el('paypal-form');
+  const sf = el('stripe-form');
+  if (pf) pf.addEventListener('submit', function(){ refreshHiddenOrder(); });
+  if (sf) sf.addEventListener('submit', function(){ refreshHiddenOrder(); });
+})();
+</script>

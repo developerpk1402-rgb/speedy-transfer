@@ -1,0 +1,161 @@
+{% extends 'chat/base.html' %}
+
+{% block title %}Agent Portal{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100">
+    <nav class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <h1 class="text-xl font-bold">Agent Portal</h1>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <span class="text-gray-700 mr-4">{{ request.user.email }}</span>
+                    <a href="{% url 'logout' %}" class="bg-red-500 text-white px-4 py-2 rounded">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-12 gap-6">
+            <!-- Chat list -->
+            <div class="col-span-4 bg-white rounded-lg shadow">
+                <div class="p-4 border-b">
+                    <h2 class="text-lg font-semibold">Active Chats</h2>
+                </div>
+                <div id="chatList" class="divide-y"></div>
+            </div>
+
+            <!-- Chat window -->
+            <div class="col-span-8 bg-white rounded-lg shadow">
+                <div id="chatWindow" class="h-[calc(100vh-12rem)] flex flex-col">
+                    <div class="p-4 border-b">
+                        <h3 id="currentChat" class="text-lg font-semibold">Select a chat</h3>
+                    </div>
+                    <div id="messages" class="flex-1 p-4 overflow-y-auto"></div>
+                    <div class="p-4 border-t">
+                        <form id="messageForm" class="flex gap-4">
+                            <input type="text" id="messageInput" class="flex-1 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Type your message...">
+                            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Send</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentChatRoom = null;
+let chatSocket = null;
+
+// Fetch active chats
+function fetchActiveChats() {
+    fetch('/chat/api/rooms/?status=assigned')
+        .then(response => response.json())
+        .then(data => {
+            const chatList = document.getElementById('chatList');
+            chatList.innerHTML = data.map(chat => `
+                <div class="p-4 hover:bg-gray-50 cursor-pointer" onclick="joinChat(${chat.id})">
+                    <div class="font-semibold">${chat.customer_name}</div>
+                    <div class="text-sm text-gray-500">${chat.customer_email}</div>
+                </div>
+            `).join('');
+        });
+}
+
+// Join chat room
+function joinChat(roomId) {
+    if (chatSocket) {
+        chatSocket.close();
+    }
+
+    currentChatRoom = roomId;
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${wsProtocol}//${window.location.host}/ws/chat/${roomId}/`;
+    
+    try {
+        chatSocket = new WebSocket(wsUrl);
+        
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            appendMessage(data);
+        };
+
+        chatSocket.onclose = function(e) {
+            console.log('Chat socket closed unexpectedly');
+            setTimeout(() => {
+                console.log('Attempting to reconnect...');
+                joinChat(roomId);
+            }, 3000);
+        };
+
+        chatSocket.onerror = function(e) {
+            console.error('WebSocket error:', e);
+        };
+    } catch (error) {
+        console.error('WebSocket connection error:', error);
+    }
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        appendMessage(data);
+    };
+
+    // Load chat history
+    fetch(`/chat/api/messages/?chat_room=${roomId}`)
+        .then(response => response.json())
+        .then(data => {
+            const messages = document.getElementById('messages');
+            messages.innerHTML = '';
+            data.forEach(msg => appendMessage({
+                message: msg.content,
+                sender_type: msg.sender_type,
+                timestamp: msg.created_at
+            }));
+        });
+}
+
+// Append message to chat window
+function appendMessage(data) {
+    const messages = document.getElementById('messages');
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `mb-4 ${data.sender_type === 'agent' ? 'text-right' : ''}`;
+    
+    const msgContent = document.createElement('div');
+    msgContent.className = `inline-block p-3 rounded-lg ${
+        data.sender_type === 'agent' 
+            ? 'bg-indigo-600 text-white' 
+            : 'bg-gray-100 text-gray-900'
+    }`;
+    msgContent.textContent = data.message;
+    
+    msgDiv.appendChild(msgContent);
+    messages.appendChild(msgDiv);
+    messages.scrollTop = messages.scrollHeight;
+}
+
+// Send message
+document.getElementById('messageForm').onsubmit = function(e) {
+    e.preventDefault();
+    const messageInput = document.getElementById('messageInput');
+    const message = messageInput.value;
+    
+    if (message && chatSocket) {
+        chatSocket.send(JSON.stringify({
+            'message': message,
+            'sender_type': 'agent'
+        }));
+        messageInput.value = '';
+    }
+};
+
+// Initial load
+fetchActiveChats();
+setInterval(fetchActiveChats, 30000); // Refresh every 30 seconds
+</script>
+{% endblock %}

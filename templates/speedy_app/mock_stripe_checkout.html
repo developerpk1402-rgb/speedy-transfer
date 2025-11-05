@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Stripe Checkout - Test Payment</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f6f9fc;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .checkout-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            color: #635bff;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .session-id {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .order-summary {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .order-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .order-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            color: #333;
+        }
+        .payment-form {
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #635bff;
+            box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.1);
+        }
+        .test-cards {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .test-cards h4 {
+            margin: 0 0 10px 0;
+            color: #1976d2;
+        }
+        .test-card {
+            font-family: monospace;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin: 5px 0;
+            cursor: pointer;
+            border: 1px solid #ddd;
+        }
+        .test-card:hover {
+            background: #f5f5f5;
+        }
+        .pay-button {
+            width: 100%;
+            background: #635bff;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .pay-button:hover {
+            background: #5a52e5;
+        }
+        .pay-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .cancel-button {
+            width: 100%;
+            background: transparent;
+            color: #666;
+            border: 1px solid #d1d5db;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .cancel-button:hover {
+            background: #f9f9f9;
+        }
+        .mock-notice {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="checkout-container">
+        <div class="header">
+            <div class="logo">💳 Mock Stripe Checkout</div>
+            <div class="session-id">Session: {{ session_id }}</div>
+        </div>
+
+        <div class="mock-notice">
+            <strong>🧪 Test Mode:</strong> This is a mock Stripe checkout page for testing. No real payment will be processed.
+        </div>
+
+        {% if order_data %}
+        <div class="order-summary">
+            <div class="order-title">Order Summary</div>
+            {% for item in order_data.items %}
+            <div class="order-item">
+                <span>{{ item.name }}</span>
+                <span>${{ item.unit_amount|floatformat:2 }} {{ item.currency }}</span>
+            </div>
+            {% endfor %}
+            <div class="order-item">
+                <span><strong>Total</strong></span>
+                <span><strong>${{ order_data.total|floatformat:2 }} {{ order_data.currency }}</strong></span>
+            </div>
+        </div>
+        {% endif %}
+
+        <form class="payment-form" id="paymentForm">
+            <div class="test-cards">
+                <h4>🧪 Test Card Numbers</h4>
+                <div class="test-card" onclick="fillCard('4242424242424242')">4242 4242 4242 4242 - Success</div>
+                <div class="test-card" onclick="fillCard('4000000000000002')">4000 0000 0000 0002 - Declined</div>
+                <div class="test-card" onclick="fillCard('4000000000009995')">4000 0000 0000 9995 - Insufficient Funds</div>
+            </div>
+
+            <div class="form-group">
+                <label for="cardNumber">Card Number</label>
+                <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+            </div>
+
+            <div class="form-group">
+                <label for="expiry">Expiry Date</label>
+                <input type="text" id="expiry" placeholder="MM/YY" maxlength="5" required>
+            </div>
+
+            <div class="form-group">
+                <label for="cvc">CVC</label>
+                <input type="text" id="cvc" placeholder="123" maxlength="4" required>
+            </div>
+
+            <div class="form-group">
+                <label for="name">Name on Card</label>
+                <input type="text" id="name" placeholder="John Doe" required>
+            </div>
+
+            <button type="submit" class="pay-button" id="payButton">
+                Pay ${{ order_data.total|floatformat:2|default:"0.00" }} {{ order_data.currency|default:"USD" }}
+            </button>
+
+            <button type="button" class="cancel-button" onclick="cancelPayment()">
+                Cancel
+            </button>
+        </form>
+    </div>
+
+    <script>
+        function fillCard(cardNumber) {
+            document.getElementById('cardNumber').value = cardNumber;
+            document.getElementById('expiry').value = '12/25';
+            document.getElementById('cvc').value = '123';
+            document.getElementById('name').value = 'Test User';
+        }
+
+        function formatCardNumber(input) {
+            let value = input.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            input.value = formattedValue;
+        }
+
+        function formatExpiry(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            input.value = value;
+        }
+
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            formatCardNumber(e.target);
+        });
+
+        document.getElementById('expiry').addEventListener('input', function(e) {
+            formatExpiry(e.target);
+        });
+
+        document.getElementById('paymentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+            const payButton = document.getElementById('payButton');
+            
+            payButton.disabled = true;
+            payButton.textContent = 'Processing...';
+            
+            // Simulate payment processing
+            setTimeout(() => {
+                if (cardNumber === '4242424242424242') {
+                    // Success
+                    window.location.href = `/mock_payment_success/?session_id={{ session_id }}`;
+                } else if (cardNumber === '4000000000000002') {
+                    // Declined
+                    alert('❌ Payment declined. Please try a different card.');
+                    payButton.disabled = false;
+                    payButton.textContent = `Pay ${{ order_data.total|floatformat:2|default:"0.00" }} {{ order_data.currency|default:"USD" }}`;
+                } else if (cardNumber === '4000000000009995') {
+                    // Insufficient funds
+                    alert('❌ Insufficient funds. Please try a different card.');
+                    payButton.disabled = false;
+                    payButton.textContent = `Pay ${{ order_data.total|floatformat:2|default:"0.00" }} {{ order_data.currency|default:"USD" }}`;
+                } else {
+                    // Invalid card
+                    alert('❌ Invalid card number. Please check and try again.');
+                    payButton.disabled = false;
+                    payButton.textContent = `Pay ${{ order_data.total|floatformat:2|default:"0.00" }} {{ order_data.currency|default:"USD" }}`;
+                }
+            }, 2000);
+        });
+
+        function cancelPayment() {
+            if (confirm('Are you sure you want to cancel this payment?')) {
+                window.location.href = '/payment_failed/';
+            }
+        }
+    </script>
+</body>
+</html>
+

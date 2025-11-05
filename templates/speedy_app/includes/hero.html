@@ -1,0 +1,67 @@
+{% load static %}
+<!-- Carga el tag 'static' de Django para usar archivos estáticos (imágenes, CSS, JS). -->
+
+<style>
+  .hero-bg {
+    background-image: url('{% static "images/background-hero.jpeg" %}');
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+</style>
+<div class="relative hero hero-bg min-h-[94vh] bg-center text-white">
+  <!-- Contenedor principal con posición relativa para referencia de posicionamiento -->
+
+  <!--
+    - 'relative': convierte este div en contenedor de referencia para elementos posicionados absolutamente.
+    - 'hero': clase semántica que puede tener estilos ya definidos (tailwind u otro CSS).
+    - 'min-h-[94vh]': altura mínima del 94% del viewport (ventana) para ocupar casi toda la pantalla.
+    - 'bg-center': centra la imagen de fondo.
+    - 'text-white': aplica color blanco al texto.
+    - 'style="background-image: url(...)": define la imagen de fondo usando la ruta estática proporcionada por Django.
+  -->
+
+  <div class="p-6 md:p-8 max-w-xl mx-auto md:mx-0 md:absolute md:bottom-20 md:right-0 text-center md:text-right">
+    <!--
+      Caja de texto posicionada dentro del div relativo:
+      - 'absolute': posicionamiento absoluto.
+      - 'top-0 right-0': ubica la caja en la esquina superior derecha del contenedor.
+      - 'p-8': padding uniforme (espaciado interior) de 2rem en todos los lados.
+      - 'max-w-xl': ancho máximo para mantener lecturabilidad (~36rem).
+      - 'text-right': alinea el texto hacia la derecha dentro de la caja.
+    -->
+
+  <h1 class="text-4xl md:text-5xl leading-tight md:leading-[60px] font-bold">
+      <!--
+        - 'text-5xl': tamaño de fuente muy grande (~3rem).
+        - 'leading-[60px]': altura de línea fija de 60px.
+        - 'font-bold': negrita.
+      -->
+      Call to action
+    </h1>
+
+<p class="text-base md:text-lg leading-normal md:leading-[27px] py-4 md:py-6">
+  <!-- Párrafo principal:
+       - 'text-lg': tamaño de fuente grande (~1.125rem)
+       - 'leading-[27px]': altura de línea de 27px
+       - 'py-6': padding vertical de 1.5rem arriba y abajo
+  -->
+
+  <span class="block font-alt text-lg leading-[27px] mb-4">
+    <!--
+      - 'block': fuerza salto de línea después del span
+      - 'font-alt': utiliza otra familia de fuente (define en tu CSS)
+      - 'text-lg': mantiene el tamaño de fuente grande
+      - 'leading-[27px]': mantiene la misma altura de línea
+      - 'mb-4': margen inferior para separar del siguiente texto (~1rem)
+      -->
+    Your trusted private transportation.
+  </span>
+
+  Explore Puerto Vallarta and its surroundings with a premium transportation service.
+  Safety, punctuality, and comfort on every trip.
+  Book now and travel worry-free!
+</p>
+
+
+  </div>
+</div>
