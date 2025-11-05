@@ -1,0 +1,50 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "config/wsgi.py",
+            "use": "@vercel/python",
+            "config": {
+                "maxLambdaSize": "15mb",
+                "runtime": "python3.11",
+                "excludeFiles": [
+                    "venv311/**",
+                    "__pycache__/**",
+                    "*.pyc"
+                ]
+            }
+        },
+        {
+            "src": "static/**",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "build_files.sh",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "staticfiles"
+            }
+        }
+    ],
+    "env": {
+        "DB_NAME": "speedy",
+        "DB_USER": "speedy_user",
+        "DB_HOST": "45.82.72.136",
+        "DB_PORT": "3306",
+        "DJANGO_SETTINGS_MODULE": "config.settings.production"
+    },
+    "routes": [
+        {
+            "src": "/static/(.*)",
+            "dest": "/staticfiles/$1"
+        },
+        {
+            "src": "/favicon.ico",
+            "dest": "/staticfiles/favicon.ico"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "config/wsgi.py"
+        }
+    ]
+}

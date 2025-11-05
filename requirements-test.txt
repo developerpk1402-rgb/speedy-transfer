@@ -1,0 +1,47 @@
+# Test requirements for Speedy Transfers payment system
+# Install with: pip install -r requirements-test.txt
+
+# Core testing dependencies
+pytest==7.4.3
+pytest-django==4.7.0
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+pytest-xdist==3.3.1
+
+# Django testing utilities
+django-test-plus==1.4.2
+factory-boy==3.3.0
+faker==20.1.0
+
+# Mocking and test doubles
+responses==0.24.1
+httpretty==1.1.4
+freezegun==1.2.2
+
+# Coverage and reporting
+coverage==7.3.2
+coverage-badge==1.1.0
+
+# Database testing
+pytest-db==0.3.2
+
+# Performance testing
+pytest-benchmark==4.0.0
+
+# Security testing
+bandit==1.7.5
+safety==2.3.5
+
+# Code quality
+flake8==6.1.0
+black==23.11.0
+isort==5.12.0
+
+# Additional utilities for payment testing
+stripe==7.8.0
+paypalrestsdk==1.13.1
+requests-mock==1.11.0
+
+# Environment management
+python-dotenv==1.0.0
+environs==10.0.0

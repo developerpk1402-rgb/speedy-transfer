@@ -1,0 +1,28 @@
+{
+  "name": "speedy-transfer",
+  "version": "1.0.0",
+  "description": "Speedy Transfer Django application",
+  "scripts": {
+    "dev": "python manage.py runserver --settings=config.settings.develop",
+    "dev-develop": "python manage.py runserver --settings=config.settings.develop",
+    "build": "chmod +x build_files.sh && ./build_files.sh",
+    "build-css": "cd templates/assets && npm run watch",
+    "install-deps": "cd templates/assets && npm install",
+    "test": "python manage.py test --settings=config.settings.settings",
+    "migrate": "python manage.py migrate --settings=config.settings.settings",
+    "makemigrations": "python manage.py makemigrations --settings=config.settings.settings",
+    "collectstatic": "python manage.py collectstatic --settings=config.settings.settings",
+    "shell": "python manage.py shell --settings=config.settings.settings"
+  },
+  "keywords": ["django", "transfer", "booking"],
+  "author": "Speedy Transfer Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}
+
+
+
+
